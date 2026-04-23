@@ -3,24 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Jajod - Portal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>RPS Jajod Portal</title>
+    <style>
+        /* CSS Styles */
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        .hidden { display: none; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #007BFF; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background-color: #0056b3; }
+        .student-item { text-align: left; background: #e9ecef; padding: 10px; border-radius: 8px; margin-top: 10px; }
+    </style>
 </head>
 <body>
-    <div class="login-container">
-        <h1>RPS Jajod</h1>
-        <p>Let's get started</p>
-        
-        <div class="input-group">
-            <input type="text" id="mobileNumber" placeholder="Enter your Mobile Number...">
-        </div>
 
-        <button onclick="checkLogin()" class="btn-primary">Continue →</button>
-        
-        <div class="divider">or Login with username</div>
+    <div id="loginPage" class="card">
+        <h1>RPS Jajod</h1>
+        <p>Student & Teacher Portal</p>
+        <input type="text" id="mobileNumber" placeholder="Enter Mobile Number...">
+        <button onclick="handleLogin()">Continue →</button>
+        <p style="color: #007BFF; font-size: 14px; margin-top: 20px;">or Login with username</p>
     </div>
 
-    <script src="script.js"></script>
+    <div id="teacherPage" class="card hidden">
+        <h2>Teacher Panel</h2>
+        <p>Register New Student</p>
+        <input type="text" id="sName" placeholder="Student Full Name">
+        <input type="text" id="sClass" placeholder="Class (e.g. 11-COMM)">
+        <input type="number" id="sFees" placeholder="Pending Fees (₹)">
+        <button onclick="addStudent()" style="background-color: #28a745;">Register Student</button>
+        
+        <hr style="margin: 20px 0;">
+        <h3>Registered Students</h3>
+        <div id="studentList"></div>
+        <button onclick="location.reload()" style="background-color: #6c757d;">Logout</button>
+    </div>
+
+    <script>
+        // JavaScript Logic
+        function handleLogin() {
+            const mobile = document.getElementById('mobileNumber').value;
+            
+            if (mobile === "9999") {
+                // Hide Login, Show Teacher Panel
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('teacherPage').classList.remove('hidden');
+            } else if (mobile === "") {
+                alert("Please enter a number");
+            } else {
+                alert("Student Dashboard coming soon for: " + mobile);
+            }
+        }
+
+        function addStudent() {
+            const name = document.getElementById('sName').value;
+            const cls = document.getElementById('sClass').value;
+            const fees = document.getElementById('sFees').value;
+
+            if (name && cls) {
+                const list = document.getElementById('studentList');
+                const newItem = document.createElement('div');
+                newItem.className = 'student-item';
+                newItem.innerHTML = `<strong>${name}</strong><br>Class: ${cls} | Fees: ₹${fees}`;
+                list.appendChild(newItem);
+
+                // Clear inputs
+                document.getElementById('sName').value = '';
+                document.getElementById('sClass').value = '';
+                document.getElementById('sFees').value = '';
+            } else {
+                alert("Please fill name and class");
+            }
+        }
+    </script>
 </body>
-      </html>
-      
+</html>
+    
