@@ -3,309 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RPS Master Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>RPS Master Dashboard</title>
     <style>
         :root {
-            --primary: #6366f1; /* Indigo */
-            --secondary: #4f46e5;
-            --accent: #f43f5e; /* Rose */
-            --bg: #0f172a; /* Slate 900 */
-            --card: rgba(255, 255, 255, 0.05);
-            --text-p: #f8fafc;
-            --text-s: #94a3b8;
-            --glass: blur(12px) saturate(180%);
+            --primary: #4361ee; --secondary: #3f37c9; --accent: #4cc9f0;
+            --bg: #f8f9fd; --card: #ffffff; --text: #1e293b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
 
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: #e2e8f0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
+
+        /* App Frame */
+        .app-shell { width: 100%; max-width: 420px; height: 100%; background: var(--bg); position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.2); }
+
+        /* Screen Transitions */
+        .screen { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); background: var(--bg); overflow-y: auto; padding-bottom: 90px; }
+        .screen.hidden { transform: translateX(100%); pointer-events: none; }
+        .screen.active { transform: translateX(0); z-index: 10; }
+
+        /* Header UI */
+        .header-main { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 40px 20px 60px; border-radius: 0 0 35px 35px; color: white; position: relative; }
+        .profile-float { background: white; margin: -35px 15px 15px; padding: 15px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow); position: relative; z-index: 11; animation: popIn 0.4s ease-out; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         
-        body { 
-            margin: 0; 
-            background: var(--bg); 
-            color: var(--text-p); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh;
-            overflow: hidden;
-        }
+        .avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #eee; }
 
-        /* Phone Frame Simulation */
-        .app-shell {
-            width: 100%;
-            max-width: 414px;
-            height: 100%;
-            background: #000;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        /* Grid Menu */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
+        .menu-item { background: white; padding: 18px 5px; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .menu-item:active { transform: scale(0.9); background: #f0f7ff; }
+        .menu-item i { font-size: 26px; display: block; margin-bottom: 8px; }
+        .menu-item span { font-size: 11px; font-weight: bold; color: #64748b; }
 
-        /* Smooth View Transitions */
-        .view {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            padding-bottom: 90px;
-            overflow-y: auto;
-            background: var(--bg);
-            z-index: 10;
-        }
+        /* Forms & Inputs */
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 14px; transition: 0.3s; background: #fafcfe; }
+        input:focus { border-color: var(--primary); outline: none; background: white; }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(67,97,238,0.3); }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+        .btn.sec { background: #64748b; }
 
-        .view.hidden { transform: translateY(30px); opacity: 0; pointer-events: none; z-index: 5; }
-        .view.active { transform: translateY(0); opacity: 1; z-index: 20; }
+        /* Bottom Navigation */
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 80px; background: white; display: flex; align-items: center; border-top: 1px solid #f1f5f9; z-index: 100; }
+        .nav-link { flex: 1; text-align: center; color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .nav-link.active { color: var(--primary); }
+        .nav-link i { font-size: 24px; display: block; margin-bottom: 4px; }
+        .nav-center { background: var(--primary); color: white !important; width: 55px; height: 55px; border-radius: 50%; transform: translateY(-25px); display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); border: 5px solid var(--bg); }
 
-        /* Modern Typography & UI */
-        .glass-header {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            padding: 50px 25px 30px;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            position: relative;
-        }
-
-        .profile-float {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: var(--glass);
-            margin: -25px 20px 20px;
-            padding: 15px;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: slideIn 0.6s ease;
-        }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .avatar { width: 60px; height: 60px; border-radius: 20px; object-fit: cover; border: 2px solid #fff; }
-
-        /* Grid System */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
-        .grid-card {
-            background: var(--card);
-            padding: 20px 10px;
-            border-radius: 24px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .grid-card:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
-        .grid-card i { font-size: 26px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 8px var(--primary)); }
-        .grid-card span { font-size: 11px; font-weight: 600; color: var(--text-s); }
-
-        /* Input Styles */
-        input, select, textarea {
-            width: 100%; padding: 16px; margin: 10px 0;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px; color: #fff; outline: none;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white; border: none; padding: 18px;
-            border-radius: 18px; font-weight: 800; cursor: pointer;
-            width: 100%; transition: 0.3s; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-        }
-        .btn:active { transform: scale(0.96); }
-
-        /* Navigation Bar */
-        .nav-bar {
-            position: absolute; bottom: 0;
-            width: 100%; height: 85px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: var(--glass);
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn { color: var(--text-s); font-size: 10px; font-weight: bold; text-align: center; cursor: pointer; flex: 1; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn i { font-size: 24px; display: block; margin-bottom: 4px; }
-        .nav-center { background: var(--primary); color: white !important; width: 55px; height: 55px; border-radius: 50%; transform: translateY(-25px); display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5); border: 4px solid var(--bg); }
-
-        /* Data Tables */
-        table { width: 100%; border-spacing: 0 10px; }
-        tr { background: var(--card); border-radius: 15px; }
-        td, th { padding: 15px; text-align: left; }
-        td:first-child { border-radius: 15px 0 0 15px; }
-        td:last-child { border-radius: 0 15px 15px 0; }
-        .pill { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 12px; font-size: 11px; color: #94a3b8; text-transform: uppercase; }
+        td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 500; }
+        .status { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; }
     </style>
 </head>
 <body>
 
 <div class="app-shell">
 
-    <div id="v-login" class="view active" style="display:flex; flex-direction:column; justify-content:center; padding:40px;">
-        <div style="text-align: center; margin-bottom: 50px;">
-            <div style="background:var(--primary); width:80px; height:80px; border-radius:24px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:40px; box-shadow:0 0 30px rgba(99,102,241,0.5);">R</div>
-            <h1 style="margin-top:20px; font-size:32px;">RPS PORTAL</h1>
-            <p style="color:var(--text-s)">Welcome back, Scholar</p>
+    <div id="scr-login" class="screen active" style="display:flex; flex-direction:column; justify-content:center; padding:40px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div style="background:var(--primary); width:70px; height:70px; border-radius:20px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:35px; color:white; box-shadow:0 10px 20px rgba(67,97,238,0.3);">R</div>
+            <h1 style="margin-top:20px; letter-spacing:-1px;">RPS PORTAL</h1>
+            <p style="color:#64748b;">Sign in to access your dashboard</p>
         </div>
-        <input type="text" id="l-id" placeholder="ID Number">
-        <input type="password" id="l-ps" placeholder="Password">
-        <button class="btn" onclick="sys.login()" style="margin-top:20px;">AUTHENTICATE</button>
+        <input type="text" id="l-id" placeholder="User ID / Mobile">
+        <input type="password" id="l-pass" placeholder="Password">
+        <button class="btn" style="margin-top:20px;" onclick="sys.login()">LOGIN NOW</button>
+        <p style="text-align:center; font-size:12px; color:#cbd5e1; margin-top:20px;">Admin: 9999 / RPS@123</p>
     </div>
 
-    <div id="v-admin" class="view hidden">
-        <div class="glass-header"><h2>Admin Center</h2></div>
-        <div style="padding:20px;">
-            <div class="grid-card" style="margin-bottom:20px;">
-                <h3 style="margin:0">Create Student</h3>
-                <input type="text" id="a-id" placeholder="Mobile / ID">
-                <input type="text" id="a-nm" placeholder="Full Name">
-                <input type="password" id="a-pass" placeholder="Password">
-                <input type="file" id="a-pic" accept="image/*">
-                <button class="btn" onclick="sys.reg()">Save Record</button>
+    <div id="scr-admin" class="screen hidden">
+        <div class="header-main"><h2>Admin Console</h2></div>
+        
+        <div class="card">
+            <h3>Manage Student Data</h3>
+            <label style="font-size:11px; font-weight:bold;">Select Student to Update:</label>
+            <select id="a-sel" onchange="sys.loadToForm()"></select>
+            <input type="text" id="a-id" placeholder="Mobile ID">
+            <input type="text" id="a-nm" placeholder="Full Name">
+            <input type="password" id="a-ps" placeholder="Password">
+            <input type="file" id="a-pic" accept="image/*">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" onclick="sys.saveStu()">Save / New</button>
+                <button class="btn sec" onclick="sys.updateStu()">Update Existing</button>
             </div>
-            <div class="grid-card" style="margin-bottom:20px; background:rgba(99,102,241,0.1)">
-                <h3 style="margin:0">Marks & Attendance</h3>
-                <select id="a-sel"></select>
-                <div style="display:flex; gap:10px; margin:10px 0;">
-                    <button class="btn" style="background:#10b981" onclick="sys.mark('Present')">Present</button>
-                    <button class="btn" style="background:#f43f5e" onclick="sys.mark('Absent')">Absent</button>
-                </div>
-                <input type="text" id="a-sub" placeholder="Subject">
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="a-t" placeholder="Total">
-                    <input type="number" id="a-o" placeholder="Obtained">
-                </div>
-                <button class="btn" onclick="sys.saveRes()">Publish Result</button>
-            </div>
-            <button class="btn" style="background:#334155" onclick="location.reload()">Logout Admin</button>
         </div>
+
+        <div class="card" style="background:#f0f7ff;">
+            <h3>Academic Entry</h3>
+            <input type="text" id="a-sub" placeholder="Subject">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="a-t" placeholder="Total">
+                <input type="number" id="a-o" placeholder="Obtained">
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn" style="background:#10b981" onclick="sys.mark('Present')">Present</button>
+                <button class="btn" style="background:#ef4444" onclick="sys.mark('Absent')">Absent</button>
+                <button class="btn" style="background:#1e293b" onclick="sys.addRes()">Add Result</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Global Alerts</h3>
+            <textarea id="a-news" placeholder="Write new update for students..."></textarea>
+            <button class="btn" onclick="sys.setNews()">Push Update</button>
+        </div>
+        <div style="padding:0 15px 30px;"><button class="btn sec" onclick="location.reload()">Logout</button></div>
     </div>
 
-    <div id="v-home" class="view hidden">
-        <div class="glass-header">
-            <h2 style="margin:0;">Dashboard</h2>
-            <div id="live-clock" style="font-size:12px; opacity:0.6;"></div>
+    <div id="scr-home" class="screen hidden">
+        <div class="header-main">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b style="font-size:20px;">RPS JAJOD</b>
+                <span id="live-clock" style="font-size:12px; opacity:0.8;"></span>
+            </div>
         </div>
+        
         <div class="profile-float">
-            <img id="s-img" src="" class="avatar">
+            <img src="" id="s-img" class="avatar">
             <div>
-                <h3 id="s-name" style="margin:0">Loading...</h3>
-                <span id="s-id-txt" style="color:var(--primary); font-size:12px; font-weight:800;">ID: 000</span>
+                <h3 id="s-nm" style="margin:0; color:var(--text);">Student</h3>
+                <span id="s-id-txt" style="font-size:12px; color:var(--primary); font-weight:800;">ID: 000</span>
             </div>
         </div>
 
-        <div class="grid">
-            <div class="grid-card" onclick="sys.go('view', 'att')"><i>📅</i><span>Attendance</span></div>
-            <div class="grid-card" onclick="sys.go('view', 'res')"><i>🏆</i><span>Results</span></div>
-            <div class="grid-card" onclick="sys.go('view', 'hw')"><i>📚</i><span>Homework</span></div>
-            <div class="grid-card" onclick="sys.go('view', 'fee')"><i>💳</i><span>Fees</span></div>
-            <div class="grid-card" onclick="sys.go('view', 'syl')"><i>📑</i><span>Syllabus</span></div>
-            <div class="grid-card" onclick="sys.go('view', 'prof')"><i>👤</i><span>Profile</span></div>
+        <div class="menu-grid">
+            <div class="menu-item" onclick="sys.view('att')"><i>📅</i><span>Attendance</span></div>
+            <div class="menu-item" onclick="sys.view('res')"><i>📊</i><span>Results</span></div>
+            <div class="menu-item" onclick="sys.view('hw')"><i>📚</i><span>Homework</span></div>
+            <div class="menu-item" onclick="sys.view('fee')"><i>💸</i><span>Fees</span></div>
+            <div class="menu-item" onclick="sys.view('syl')"><i>📑</i><span>Syllabus</span></div>
+            <div class="menu-item" onclick="sys.view('prof')"><i>👤</i><span>Profile</span></div>
         </div>
 
-        <div style="padding:0 20px;">
-            <div class="grid-card" style="text-align:left; background:linear-gradient(to right, #4f46e5, #818cf8); border:none;">
-                <h4 style="margin:0; color:#fff;">📢 Board Notice</h4>
-                <p id="news-txt" style="font-size:12px; margin-top:8px; opacity:0.9;">System is active.</p>
+        <div class="card" style="background:var(--primary); color:white; border:none;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <i>🔔</i><h4 style="margin:0;">Notice Board</h4>
             </div>
+            <p id="st-news" style="font-size:13px; margin:0; opacity:0.9;">No new updates from RPS.</p>
         </div>
     </div>
 
-    <div id="v-data" class="view hidden">
-        <div class="glass-header"><h2 id="v-title">Info</h2></div>
-        <div id="v-content" style="padding:20px;"></div>
-        <div style="padding:0 20px;"><button class="btn" onclick="sys.go('home')">Return Home</button></div>
+    <div id="scr-view" class="screen hidden">
+        <div class="header-main" style="padding-bottom:20px;">
+            <h2 id="v-title" style="margin:0;">Details</h2>
+            <button class="btn" style="width:auto; margin-top:15px; padding:8px 20px;" onclick="sys.go('home')">Back</button>
+        </div>
+        <div id="v-body" style="padding:20px;"></div>
     </div>
 
-    <div id="navbar" class="nav-bar" style="display:none;">
-        <div class="nav-btn active" onclick="sys.go('home')"><i>🏠</i>Home</div>
-        <div class="nav-btn" onclick="sys.go('view', 'prof')"><i>👤</i>Profile</div>
-        <div class="nav-btn nav-center" onclick="sys.go('home')">🔳</div>
-        <div class="nav-btn"><i>🔔</i>Alerts</div>
-        <div class="nav-btn"><i>🛠️</i>Tools</div>
+    <div id="nav-bar" class="bottom-nav hidden">
+        <div class="nav-link active" onclick="sys.go('home')"><i>🏠</i>Home</div>
+        <div class="nav-link" onclick="sys.view('prof')"><i>👤</i>Profile</div>
+        <div class="nav-link"><div class="nav-center" onclick="sys.go('home')">🔳</div></div>
+        <div class="nav-link"><i>🔔</i>Alerts</div>
+        <div class="nav-link" onclick="alert('School Contact: 0157-XXXXXX')"><i>📞</i>Help</div>
     </div>
 
 </div>
 
 <script>
 const sys = {
-    db: JSON.parse(localStorage.getItem('rps_pro_v10')) || [],
-    news: localStorage.getItem('rps_news') || "Welcome to RPS Jajod Portal.",
-    user: null,
+    db: JSON.parse(localStorage.getItem('rps_v30_db')) || [],
+    news: localStorage.getItem('rps_news_v30') || "Welcome to RPS Portal.",
+    u: null,
 
     login() {
-        const id = document.getElementById('l-id').value, ps = document.getElementById('l-ps').value;
+        const id = document.getElementById('l-id').value, ps = document.getElementById('l-pass').value;
         if(id === "9999" && ps === "RPS@123") return this.go('admin');
-        const u = this.db.find(x => x.id === id && x.ps === ps);
-        if(u) { this.user = u; this.loadUser(); this.go('home'); } else alert("Access Denied");
+        const user = this.db.find(x => x.id === id && x.ps === ps);
+        if(user) { this.u = user; this.loadProfile(); this.go('home'); } else alert("Invalid ID/Pass");
     },
 
-    reg() {
-        const id = document.getElementById('a-id').value, nm = document.getElementById('a-nm').value, ps = document.getElementById('a-pass').value, f = document.getElementById('a-pic').files[0];
-        const save = (img) => {
+    saveStu() {
+        const id = document.getElementById('a-id').value, nm = document.getElementById('a-nm').value, ps = document.getElementById('a-ps').value, f = document.getElementById('a-pic').files[0];
+        const process = (img) => {
             this.db.push({ id, nm, ps, img:img||'', att:[], res:[] });
-            this.sync(); this.refreshAdm(); alert("Student Saved");
+            this.sync(); this.refreshAdm(); alert("New Student Registered!");
         };
-        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => save(r.result); } else save();
+        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => process(r.result); } else process();
+    },
+
+    // NEW: Update Existing Student Function
+    updateStu() {
+        const selId = document.getElementById('a-sel').value;
+        const idx = this.db.findIndex(x => x.id === selId);
+        if(idx === -1) return alert("Select a student first!");
+
+        const f = document.getElementById('a-pic').files[0];
+        const applyUpdate = (img) => {
+            this.db[idx].id = document.getElementById('a-id').value;
+            this.db[idx].nm = document.getElementById('a-nm').value;
+            this.db[idx].ps = document.getElementById('a-ps').value;
+            if(img) this.db[idx].img = img;
+            this.sync(); alert("Student Record Updated!");
+            this.refreshAdm();
+        };
+        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => applyUpdate(r.result); } else applyUpdate();
+    },
+
+    loadToForm() {
+        const id = document.getElementById('a-sel').value;
+        const s = this.db.find(x => x.id === id);
+        if(s) {
+            document.getElementById('a-id').value = s.id;
+            document.getElementById('a-nm').value = s.nm;
+            document.getElementById('a-ps').value = s.ps;
+        }
     },
 
     mark(st) {
         const id = document.getElementById('a-sel').value, idx = this.db.findIndex(x => x.id === id);
         this.db[idx].att.unshift({ d: new Date().toLocaleDateString(), st });
-        this.sync(); alert("Attendance Logged");
+        this.sync(); alert("Attendance Saved!");
     },
 
-    saveRes() {
+    addRes() {
         const id = document.getElementById('a-sel').value, sub = document.getElementById('a-sub').value, t = document.getElementById('a-t').value, o = document.getElementById('a-o').value;
         const idx = this.db.findIndex(x => x.id === id);
         this.db[idx].res.push({ sub, t, o });
-        this.sync(); alert("Result Posted");
+        this.sync(); alert("Result Added!");
     },
 
-    loadUser() {
-        document.getElementById('s-name').innerText = this.user.nm;
-        document.getElementById('s-id-txt').innerText = "STUDENT ID: " + this.user.id;
-        document.getElementById('s-img').src = this.user.img || "https://ui-avatars.com/api/?name="+this.user.nm+"&background=6366f1&color=fff";
-        document.getElementById('news-txt').innerText = this.news;
+    setNews() {
+        const n = document.getElementById('a-news').value;
+        localStorage.setItem('rps_news_v30', n); this.news = n; alert("News Updated!");
     },
 
-    go(pg, type) {
-        document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-        document.getElementById('navbar').style.display = (pg === 'login' || pg === 'admin') ? 'none' : 'flex';
-        
-        if(pg === 'home') document.getElementById('v-home').classList.add('active');
-        if(pg === 'admin') { document.getElementById('v-admin').classList.add('active'); this.refreshAdm(); }
-        if(pg === 'view') {
-            document.getElementById('v-data').classList.add('active');
-            this.render(type);
-        }
+    loadProfile() {
+        document.getElementById('s-nm').innerText = this.u.nm;
+        document.getElementById('s-id-txt').innerText = "ID: " + this.u.id;
+        document.getElementById('s-img').src = this.u.img || "https://ui-avatars.com/api/?name="+this.u.nm+"&background=4361ee&color=fff";
+        document.getElementById('st-news').innerText = this.news;
     },
 
-    render(type) {
-        const box = document.getElementById('v-content');
-        const tit = document.getElementById('v-title');
-        box.innerHTML = "";
+    view(type) {
+        this.go('view');
+        const b = document.getElementById('v-body'), t = document.getElementById('v-title');
         if(type === 'att') {
-            tit.innerText = "Attendance Log";
-            box.innerHTML = `<table>` + this.user.att.map(a => `<tr><td>${a.d}</td><td style="text-align:right"><span class="pill" style="background:${a.st=='Present'?'#10b981':'#f43f5e'}">${a.st}</span></td></tr>`).join('') + `</table>`;
+            t.innerText = "Attendance History";
+            b.innerHTML = `<table><tr><th>Date</th><th>Status</th></tr>` + this.u.att.map(a => `<tr><td>${a.d}</td><td><span class="status" style="background:${a.st=='Present'?'#10b981':'#ef4444'}">${a.st}</span></td></tr>`).join('') + `</table>`;
         } else if(type === 'res') {
-            tit.innerText = "Academic Results";
-            box.innerHTML = `<table>` + this.user.res.map(r => `<tr><td><b>${r.sub}</b></td><td>${r.o}/${r.t}</td><td style="color:var(--primary); font-weight:800">${(r.o/r.t*100).toFixed(1)}%</td></tr>`).join('') + `</table>`;
+            t.innerText = "Marksheet";
+            b.innerHTML = `<table><tr><th>Subject</th><th>Score</th><th>%</th></tr>` + this.u.res.map(r => `<tr><td>${r.sub}</td><td>${r.o}/${r.t}</td><td style="color:var(--primary); font-weight:800;">${((r.o/r.t)*100).toFixed(1)}%</td></tr>`).join('') + `</table>`;
         } else if(type === 'prof') {
-            tit.innerText = "Student Profile";
-            box.innerHTML = `<div class="grid-card"><img src="${this.user.img || ''}" class="avatar" style="width:100px;height:100px;margin-bottom:15px;"><br><h2>${this.user.nm}</h2><p>Roll No: ${this.user.id}</p><p>Status: Active Scholar</p></div>`;
+            t.innerText = "My Profile";
+            b.innerHTML = `<div class="card" style="text-align:center;"><img src="${document.getElementById('s-img').src}" style="width:120px;height:120px;border-radius:50%;border:4px solid var(--primary);"><br><h2>${this.u.nm}</h2><p><b>Mobile ID:</b> ${this.u.id}</p><p><b>School:</b> RPS Jajod</p></div>`;
         } else {
-            tit.innerText = "Information";
-            box.innerHTML = `<div class="grid-card">No data available for this section yet.</div>`;
+            t.innerText = "Notice";
+            b.innerHTML = `<div class="card"><p>No specific data found for this section.</p></div>`;
         }
     },
 
-    sync() { localStorage.setItem('rps_pro_v10', JSON.stringify(this.db)); },
-    refreshAdm() { document.getElementById('a-sel').innerHTML = this.db.map(s => `<option value="${s.id}">${s.nm}</option>`).join(''); }
+    go(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById('scr-' + id).classList.add('active');
+        document.getElementById('scr-' + id).classList.remove('hidden');
+        document.getElementById('nav-bar').classList.toggle('hidden', id === 'login' || id === 'admin');
+    },
+
+    sync() { localStorage.setItem('rps_v30_db', JSON.stringify(this.db)); },
+    refreshAdm() { 
+        document.getElementById('a-sel').innerHTML = '<option value="">-- Select Student --</option>' + this.db.map(s => `<option value="${s.id}">${s.nm}</option>`).join(''); 
+    }
 };
 
-setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleString(); }, 1000);
+setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
 </script>
 </body>
 </html>
