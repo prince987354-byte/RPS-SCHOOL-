@@ -3,275 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RPS Master Dashboard</title>
+    <title>RPS Portal - Designer Edition</title>
     <style>
         :root {
-            --primary: #4361ee; --secondary: #3f37c9; --accent: #4cc9f0;
-            --bg: #f8f9fd; --card: #ffffff; --text: #1e293b;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --surface: #ffffff;
+            --background: #f1f5f9;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --radius: 24px;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: #e2e8f0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
-
-        /* App Frame */
-        .app-shell { width: 100%; max-width: 420px; height: 100%; background: var(--bg); position: relative; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.2); }
-
-        /* Screen Transitions */
-        .screen { position: absolute; width: 100%; height: 100%; top: 0; left: 0; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); background: var(--bg); overflow-y: auto; padding-bottom: 90px; }
-        .screen.hidden { transform: translateX(100%); pointer-events: none; }
-        .screen.active { transform: translateX(0); z-index: 10; }
-
-        /* Header UI */
-        .header-main { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 40px 20px 60px; border-radius: 0 0 35px 35px; color: white; position: relative; }
-        .profile-float { background: white; margin: -35px 15px 15px; padding: 15px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow); position: relative; z-index: 11; animation: popIn 0.4s ease-out; }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        * { box-sizing: border-box; font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        .avatar { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #eee; }
+        body { margin: 0; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
-        /* Grid Menu */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
-        .menu-item { background: white; padding: 18px 5px; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .menu-item:active { transform: scale(0.9); background: #f0f7ff; }
-        .menu-item i { font-size: 26px; display: block; margin-bottom: 8px; }
-        .menu-item span { font-size: 11px; font-weight: bold; color: #64748b; }
+        .device-frame {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: var(--background);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
 
-        /* Forms & Inputs */
-        .card { background: white; margin: 15px; padding: 20px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        input, select, textarea { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 14px; transition: 0.3s; background: #fafcfe; }
-        input:focus { border-color: var(--primary); outline: none; background: white; }
+        /* 60FPS GPU Accelerated Layering */
+        .screen {
+            position: absolute;
+            inset: 0;
+            background: var(--background);
+            transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
+            will-change: transform;
+            overflow-y: auto;
+            padding-bottom: 100px;
+            z-index: 10;
+        }
+
+        .screen.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; z-index: 5; }
+        .screen.active { transform: scale(1); opacity: 1; z-index: 20; }
+
+        /* Dynamic Header */
+        .header-viz {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 50px 24px 80px;
+            color: white;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+        }
+
+        /* Floating Profile Card */
+        .float-card {
+            background: var(--surface);
+            margin: -50px 20px 20px;
+            padding: 20px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .img-wrap {
+            width: 70px; height: 70px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            background: #f8fafc;
+        }
+        .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Neo-Grid */
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px; }
+        .menu-tile {
+            background: var(--surface);
+            aspect-ratio: 1/1;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .menu-tile:active { transform: scale(0.9); background: #eef2ff; border-color: var(--primary); }
+        .menu-tile i { font-size: 32px; margin-bottom: 10px; }
+        .menu-tile span { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Form Design */
+        .input-box { background: var(--surface); margin: 0 20px 20px; padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+        h3 { margin: 0 0 16px; font-size: 18px; color: var(--text-main); }
         
-        .btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(67,97,238,0.3); }
-        .btn:active { transform: translateY(2px); box-shadow: none; }
-        .btn.sec { background: #64748b; }
+        input, select, textarea {
+            width: 100%; padding: 14px 18px; margin-bottom: 12px;
+            border: 2px solid #f1f5f9; border-radius: 16px;
+            background: #f8fafc; font-size: 15px; outline: none; transition: 0.2s;
+        }
+        input:focus { border-color: var(--primary); background: #fff; }
 
-        /* Bottom Navigation */
-        .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 80px; background: white; display: flex; align-items: center; border-top: 1px solid #f1f5f9; z-index: 100; }
-        .nav-link { flex: 1; text-align: center; color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .nav-link.active { color: var(--primary); }
-        .nav-link i { font-size: 24px; display: block; margin-bottom: 4px; }
-        .nav-center { background: var(--primary); color: white !important; width: 55px; height: 55px; border-radius: 50%; transform: translateY(-25px); display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); border: 5px solid var(--bg); }
+        .btn-prime {
+            background: var(--primary); color: white; border: none;
+            padding: 18px; border-radius: 18px; width: 100%;
+            font-weight: 800; cursor: pointer; font-size: 15px;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        }
 
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 12px; font-size: 11px; color: #94a3b8; text-transform: uppercase; }
-        td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 14px; font-weight: 500; }
-        .status { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; }
+        /* Tab Bar */
+        .tab-bar {
+            position: absolute; bottom: 0; width: 100%; height: 90px;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);
+            display: flex; align-items: center; z-index: 100;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        .tab-item { flex: 1; text-align: center; color: var(--text-sub); font-size: 10px; font-weight: 800; cursor: pointer; }
+        .tab-item.active { color: var(--primary); }
+        .tab-item i { font-size: 24px; display: block; margin-bottom: 4px; }
+        
+        .fab-center {
+            background: var(--primary); color: white!important;
+            width: 60px; height: 60px; border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            transform: translateY(-30px); border: 6px solid var(--background);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
     </style>
 </head>
 <body>
 
-<div class="app-shell">
+<div class="device-frame">
 
-    <div id="scr-login" class="screen active" style="display:flex; flex-direction:column; justify-content:center; padding:40px;">
-        <div style="text-align: center; margin-bottom: 40px;">
-            <div style="background:var(--primary); width:70px; height:70px; border-radius:20px; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:35px; color:white; box-shadow:0 10px 20px rgba(67,97,238,0.3);">R</div>
-            <h1 style="margin-top:20px; letter-spacing:-1px;">RPS PORTAL</h1>
-            <p style="color:#64748b;">Sign in to access your dashboard</p>
+    <div id="pg-login" class="screen active" style="display:flex; flex-direction:column; justify-content:center; padding:40px;">
+        <div style="text-align:center; margin-bottom:40px;">
+            <div style="background:var(--primary); width:80px; height:80px; border-radius:28px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; font-size:40px; color:white; box-shadow:0 20px 30px rgba(99,102,241,0.2);">R</div>
+            <h1 style="color:var(--text-main); font-size:32px; margin:0;">RPS Portal</h1>
+            <p style="color:var(--text-sub);">Secure Education Access</p>
         </div>
-        <input type="text" id="l-id" placeholder="User ID / Mobile">
-        <input type="password" id="l-pass" placeholder="Password">
-        <button class="btn" style="margin-top:20px;" onclick="sys.login()">LOGIN NOW</button>
-        <p style="text-align:center; font-size:12px; color:#cbd5e1; margin-top:20px;">Admin: 9999 / RPS@123</p>
+        <div class="input-box">
+            <input type="text" id="l-user" placeholder="Mobile / ID">
+            <input type="password" id="l-pass" placeholder="Password">
+            <button class="btn-prime" onclick="ui.auth()">CONTINUE</button>
+        </div>
     </div>
 
-    <div id="scr-admin" class="screen hidden">
-        <div class="header-main"><h2>Admin Console</h2></div>
-        
-        <div class="card">
-            <h3>Manage Student Data</h3>
-            <label style="font-size:11px; font-weight:bold;">Select Student to Update:</label>
-            <select id="a-sel" onchange="sys.loadToForm()"></select>
-            <input type="text" id="a-id" placeholder="Mobile ID">
+    <div id="pg-admin" class="screen hidden">
+        <div class="header-viz"><h2>Admin Studio</h2><p>Manage School Records</p></div>
+        <div class="input-box">
+            <h3>Student Control</h3>
+            <select id="a-sel" onchange="ui.fetchData()"></select>
             <input type="text" id="a-nm" placeholder="Full Name">
-            <input type="password" id="a-ps" placeholder="Password">
+            <input type="text" id="a-id" placeholder="ID Number">
+            <input type="password" id="a-ps" placeholder="Login Password">
             <input type="file" id="a-pic" accept="image/*">
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn" onclick="sys.saveStu()">Save / New</button>
-                <button class="btn sec" onclick="sys.updateStu()">Update Existing</button>
-            </div>
-        </div>
-
-        <div class="card" style="background:#f0f7ff;">
-            <h3>Academic Entry</h3>
-            <input type="text" id="a-sub" placeholder="Subject">
             <div style="display:flex; gap:10px;">
-                <input type="number" id="a-t" placeholder="Total">
+                <button class="btn-prime" onclick="ui.save(false)">+ NEW</button>
+                <button class="btn-prime" style="background:#475569" onclick="ui.save(true)">UPDATE</button>
+            </div>
+        </div>
+        <div class="input-box">
+            <h3>Academic Entry</h3>
+            <input type="text" id="a-sub" placeholder="Subject Name">
+            <div style="display:flex; gap:10px;">
                 <input type="number" id="a-o" placeholder="Obtained">
+                <input type="number" id="a-t" placeholder="Total">
             </div>
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn" style="background:#10b981" onclick="sys.mark('Present')">Present</button>
-                <button class="btn" style="background:#ef4444" onclick="sys.mark('Absent')">Absent</button>
-                <button class="btn" style="background:#1e293b" onclick="sys.addRes()">Add Result</button>
+                <button class="btn-prime" style="background:var(--success)" onclick="ui.mark('Present')">PRESENT</button>
+                <button class="btn-prime" style="background:var(--danger)" onclick="ui.mark('Absent')">ABSENT</button>
             </div>
+            <button class="btn-prime" style="margin-top:10px; background:#1e293b" onclick="ui.addRes()">POST RESULT</button>
         </div>
-
-        <div class="card">
-            <h3>Global Alerts</h3>
-            <textarea id="a-news" placeholder="Write new update for students..."></textarea>
-            <button class="btn" onclick="sys.setNews()">Push Update</button>
-        </div>
-        <div style="padding:0 15px 30px;"><button class="btn sec" onclick="location.reload()">Logout</button></div>
+        <div style="padding:0 20px 40px;"><button class="btn-prime" style="background:#000" onclick="location.reload()">LOGOUT</button></div>
     </div>
 
-    <div id="scr-home" class="screen hidden">
-        <div class="header-main">
+    <div id="pg-home" class="screen hidden">
+        <div class="header-viz">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size:20px;">RPS JAJOD</b>
-                <span id="live-clock" style="font-size:12px; opacity:0.8;"></span>
+                <b style="font-size:22px;">RPS JAJOD</b>
+                <span id="clock" style="font-size:12px; font-weight:bold; opacity:0.7;"></span>
             </div>
         </div>
-        
-        <div class="profile-float">
-            <img src="" id="s-img" class="avatar">
+        <div class="float-card">
+            <div class="img-wrap"><img src="" id="s-img"></div>
             <div>
-                <h3 id="s-nm" style="margin:0; color:var(--text);">Student</h3>
-                <span id="s-id-txt" style="font-size:12px; color:var(--primary); font-weight:800;">ID: 000</span>
+                <h3 id="s-nm" style="margin:0; font-size:20px;">Student</h3>
+                <span id="s-id-v" style="color:var(--primary); font-size:12px; font-weight:800;">VERIFIED ACCOUNT</span>
             </div>
         </div>
-
         <div class="menu-grid">
-            <div class="menu-item" onclick="sys.view('att')"><i>📅</i><span>Attendance</span></div>
-            <div class="menu-item" onclick="sys.view('res')"><i>📊</i><span>Results</span></div>
-            <div class="menu-item" onclick="sys.view('hw')"><i>📚</i><span>Homework</span></div>
-            <div class="menu-item" onclick="sys.view('fee')"><i>💸</i><span>Fees</span></div>
-            <div class="menu-item" onclick="sys.view('syl')"><i>📑</i><span>Syllabus</span></div>
-            <div class="menu-item" onclick="sys.view('prof')"><i>👤</i><span>Profile</span></div>
-        </div>
-
-        <div class="card" style="background:var(--primary); color:white; border:none;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                <i>🔔</i><h4 style="margin:0;">Notice Board</h4>
-            </div>
-            <p id="st-news" style="font-size:13px; margin:0; opacity:0.9;">No new updates from RPS.</p>
+            <div class="menu-tile" onclick="ui.view('att')"><i>📅</i><span>Attendance</span></div>
+            <div class="menu-tile" onclick="ui.view('res')"><i>📈</i><span>Results</span></div>
+            <div class="menu-tile" onclick="ui.view('hw')"><i>📖</i><span>Homework</span></div>
+            <div class="menu-tile" onclick="ui.view('fee')"><i>💳</i><span>Fees</span></div>
+            <div class="menu-tile" onclick="ui.view('syl')"><i>📋</i><span>Syllabus</span></div>
+            <div class="menu-tile" onclick="ui.view('prof')"><i>👤</i><span>Profile</span></div>
         </div>
     </div>
 
-    <div id="scr-view" class="screen hidden">
-        <div class="header-main" style="padding-bottom:20px;">
-            <h2 id="v-title" style="margin:0;">Details</h2>
-            <button class="btn" style="width:auto; margin-top:15px; padding:8px 20px;" onclick="sys.go('home')">Back</button>
+    <div id="pg-view" class="screen hidden">
+        <div class="header-viz" style="padding-bottom:20px;">
+            <h2 id="v-title" style="margin:0">Details</h2>
+            <button class="btn-prime" style="width:auto; padding:8px 20px; margin-top:20px; background:rgba(255,255,255,0.15)" onclick="ui.nav('home')">BACK</button>
         </div>
         <div id="v-body" style="padding:20px;"></div>
     </div>
 
-    <div id="nav-bar" class="bottom-nav hidden">
-        <div class="nav-link active" onclick="sys.go('home')"><i>🏠</i>Home</div>
-        <div class="nav-link" onclick="sys.view('prof')"><i>👤</i>Profile</div>
-        <div class="nav-link"><div class="nav-center" onclick="sys.go('home')">🔳</div></div>
-        <div class="nav-link"><i>🔔</i>Alerts</div>
-        <div class="nav-link" onclick="alert('School Contact: 0157-XXXXXX')"><i>📞</i>Help</div>
+    <div id="tabbar" class="tab-bar" style="display:none;">
+        <div class="tab-item active" onclick="ui.nav('home')"><i>🏠</i>Home</div>
+        <div class="tab-item" onclick="ui.view('prof')"><i>👤</i>Profile</div>
+        <div class="tab-item"><div class="fab-center" onclick="ui.nav('home')">R</div></div>
+        <div class="tab-item"><i>🔔</i>Alerts</div>
+        <div class="tab-item" onclick="alert('RPS Support Active')"><i>🎧</i>Help</div>
     </div>
 
 </div>
 
 <script>
-const sys = {
-    db: JSON.parse(localStorage.getItem('rps_v30_db')) || [],
-    news: localStorage.getItem('rps_news_v30') || "Welcome to RPS Portal.",
-    u: null,
+const ui = {
+    db: JSON.parse(localStorage.getItem('rps_design_v1')) || [],
+    curr: null,
 
-    login() {
-        const id = document.getElementById('l-id').value, ps = document.getElementById('l-pass').value;
-        if(id === "9999" && ps === "RPS@123") return this.go('admin');
-        const user = this.db.find(x => x.id === id && x.ps === ps);
-        if(user) { this.u = user; this.loadProfile(); this.go('home'); } else alert("Invalid ID/Pass");
+    auth() {
+        const u = document.getElementById('l-user').value, p = document.getElementById('l-pass').value;
+        if(u === "RPS" && p === "JAJ12") return ui.nav('admin');
+        const s = this.db.find(x => x.id === u && x.ps === p);
+        if(s) { this.curr = s; this.render(); ui.nav('home'); } else alert("Invalid Access");
     },
 
-    saveStu() {
+    save(upd) {
         const id = document.getElementById('a-id').value, nm = document.getElementById('a-nm').value, ps = document.getElementById('a-ps').value, f = document.getElementById('a-pic').files[0];
-        const process = (img) => {
-            this.db.push({ id, nm, ps, img:img||'', att:[], res:[] });
-            this.sync(); this.refreshAdm(); alert("New Student Registered!");
+        const exe = (img) => {
+            if(upd) {
+                const i = this.db.findIndex(x => x.id === document.getElementById('a-sel').value);
+                this.db[i] = {...this.db[i], id, nm, ps};
+                if(img) this.db[i].img = img;
+            } else {
+                this.db.push({ id, nm, ps, img:img||'', att:[], res:[] });
+            }
+            this.sync(); this.prep(); alert("Success!");
         };
-        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => process(r.result); } else process();
+        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => exe(r.result); } else exe();
     },
 
-    // NEW: Update Existing Student Function
-    updateStu() {
-        const selId = document.getElementById('a-sel').value;
-        const idx = this.db.findIndex(x => x.id === selId);
-        if(idx === -1) return alert("Select a student first!");
-
-        const f = document.getElementById('a-pic').files[0];
-        const applyUpdate = (img) => {
-            this.db[idx].id = document.getElementById('a-id').value;
-            this.db[idx].nm = document.getElementById('a-nm').value;
-            this.db[idx].ps = document.getElementById('a-ps').value;
-            if(img) this.db[idx].img = img;
-            this.sync(); alert("Student Record Updated!");
-            this.refreshAdm();
-        };
-        if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => applyUpdate(r.result); } else applyUpdate();
-    },
-
-    loadToForm() {
-        const id = document.getElementById('a-sel').value;
-        const s = this.db.find(x => x.id === id);
-        if(s) {
-            document.getElementById('a-id').value = s.id;
-            document.getElementById('a-nm').value = s.nm;
-            document.getElementById('a-ps').value = s.ps;
-        }
+    fetchData() {
+        const s = this.db.find(x => x.id === document.getElementById('a-sel').value);
+        if(s) { document.getElementById('a-id').value=s.id; document.getElementById('a-nm').value=s.nm; document.getElementById('a-ps').value=s.ps; }
     },
 
     mark(st) {
-        const id = document.getElementById('a-sel').value, idx = this.db.findIndex(x => x.id === id);
-        this.db[idx].att.unshift({ d: new Date().toLocaleDateString(), st });
-        this.sync(); alert("Attendance Saved!");
+        const i = this.db.findIndex(x => x.id === document.getElementById('a-sel').value);
+        this.db[i].att.unshift({ d: new Date().toLocaleDateString(), st });
+        this.sync(); alert("Attendance Logged");
     },
 
     addRes() {
-        const id = document.getElementById('a-sel').value, sub = document.getElementById('a-sub').value, t = document.getElementById('a-t').value, o = document.getElementById('a-o').value;
-        const idx = this.db.findIndex(x => x.id === id);
-        this.db[idx].res.push({ sub, t, o });
-        this.sync(); alert("Result Added!");
+        const i = this.db.findIndex(x => x.id === document.getElementById('a-sel').value);
+        const sub = document.getElementById('a-sub').value, o = document.getElementById('a-o').value, t = document.getElementById('a-t').value;
+        this.db[i].res.push({ sub, o, t });
+        this.sync(); alert("Result Posted");
     },
 
-    setNews() {
-        const n = document.getElementById('a-news').value;
-        localStorage.setItem('rps_news_v30', n); this.news = n; alert("News Updated!");
+    render() {
+        document.getElementById('s-nm').innerText = this.curr.nm;
+        document.getElementById('s-id-v').innerText = "ID: " + this.curr.id;
+        document.getElementById('s-img').src = this.curr.img || "https://ui-avatars.com/api/?name="+this.curr.nm+"&background=6366f1&color=fff";
     },
 
-    loadProfile() {
-        document.getElementById('s-nm').innerText = this.u.nm;
-        document.getElementById('s-id-txt').innerText = "ID: " + this.u.id;
-        document.getElementById('s-img').src = this.u.img || "https://ui-avatars.com/api/?name="+this.u.nm+"&background=4361ee&color=fff";
-        document.getElementById('st-news').innerText = this.news;
-    },
-
-    view(type) {
-        this.go('view');
-        const b = document.getElementById('v-body'), t = document.getElementById('v-title');
-        if(type === 'att') {
-            t.innerText = "Attendance History";
-            b.innerHTML = `<table><tr><th>Date</th><th>Status</th></tr>` + this.u.att.map(a => `<tr><td>${a.d}</td><td><span class="status" style="background:${a.st=='Present'?'#10b981':'#ef4444'}">${a.st}</span></td></tr>`).join('') + `</table>`;
-        } else if(type === 'res') {
-            t.innerText = "Marksheet";
-            b.innerHTML = `<table><tr><th>Subject</th><th>Score</th><th>%</th></tr>` + this.u.res.map(r => `<tr><td>${r.sub}</td><td>${r.o}/${r.t}</td><td style="color:var(--primary); font-weight:800;">${((r.o/r.t)*100).toFixed(1)}%</td></tr>`).join('') + `</table>`;
-        } else if(type === 'prof') {
-            t.innerText = "My Profile";
-            b.innerHTML = `<div class="card" style="text-align:center;"><img src="${document.getElementById('s-img').src}" style="width:120px;height:120px;border-radius:50%;border:4px solid var(--primary);"><br><h2>${this.u.nm}</h2><p><b>Mobile ID:</b> ${this.u.id}</p><p><b>School:</b> RPS Jajod</p></div>`;
-        } else {
-            t.innerText = "Notice";
-            b.innerHTML = `<div class="card"><p>No specific data found for this section.</p></div>`;
+    view(t) {
+        ui.nav('view');
+        const b = document.getElementById('v-body'), h = document.getElementById('v-title');
+        if(t === 'att') {
+            h.innerText = "Attendance History";
+            b.innerHTML = this.curr.att.map(a => `<div class="float-card" style="margin:0 0 10px;"><b>${a.d}</b> <span style="margin-left:auto; font-weight:900; color:${a.st=='Present'?'var(--success)':'var(--danger)'}">${a.st}</span></div>`).join('');
+        } else if(t === 'res') {
+            h.innerText = "Marksheet";
+            b.innerHTML = this.curr.res.map(r => `<div class="float-card" style="margin:0 0 10px;"><div><b>${r.sub}</b><br><small>${r.o}/${r.t}</small></div> <span style="margin-left:auto; color:var(--primary); font-weight:900">${((r.o/r.t)*100).toFixed(1)}%</span></div>`).join('');
+        } else if(t === 'prof') {
+            h.innerText = "Student Profile";
+            b.innerHTML = `<div class="input-box" style="text-align:center"><img src="${document.getElementById('s-img').src}" style="width:120px; border-radius:30px;"><br><h2>${this.curr.nm}</h2><p>Roll No: ${this.curr.id}</p><p>Campus: RPS Jajod</p></div>`;
         }
     },
 
-    go(id) {
+    nav(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-        document.getElementById('scr-' + id).classList.add('active');
-        document.getElementById('scr-' + id).classList.remove('hidden');
-        document.getElementById('nav-bar').classList.toggle('hidden', id === 'login' || id === 'admin');
+        document.getElementById('pg-'+id).classList.remove('hidden');
+        setTimeout(() => document.getElementById('pg-'+id).classList.add('active'), 10);
+        document.getElementById('tabbar').style.display = (id === 'login' || id === 'admin') ? 'none' : 'flex';
     },
 
-    sync() { localStorage.setItem('rps_v30_db', JSON.stringify(this.db)); },
-    refreshAdm() { 
-        document.getElementById('a-sel').innerHTML = '<option value="">-- Select Student --</option>' + this.db.map(s => `<option value="${s.id}">${s.nm}</option>`).join(''); 
-    }
+    sync() { localStorage.setItem('rps_design_v1', JSON.stringify(this.db)); },
+    prep() { document.getElementById('a-sel').innerHTML = '<option>Select Student</option>' + this.db.map(u => `<option value="${u.id}">${u.nm}</option>`).join(''); }
 };
 
-setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
 </script>
 </body>
 </html>
