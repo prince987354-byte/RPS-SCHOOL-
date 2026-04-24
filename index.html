@@ -3,221 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Portal - Premium Admin</title>
+    <title>RPS Portal - Fully Working</title>
     <style>
-        :root { 
-            --accent: #4361ee; --dark-bg: #0f172a; --card-bg: #ffffff; 
-            --text-main: #1e293b; --text-muted: #64748b; --success: #10b981; --danger: #ef4444;
-        }
-        body { font-family: 'Inter', sans-serif; margin: 0; background: #f8fafc; color: var(--text-main); }
-        .app { width: 100%; max-width: 480px; min-height: 100vh; background: #fff; margin: 0 auto; position: relative; padding-bottom: 80px; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
+        :root { --primary: #4361ee; --dark: #0f172a; --bg: #f8fafc; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        .app { width: 100%; max-width: 450px; min-height: 100vh; background: #fff; margin: 0 auto; position: relative; padding-bottom: 80px; box-shadow: 0 0 40px rgba(0,0,0,0.1); }
         .hidden { display: none !important; }
 
-        /* --- ADVANCED ADMIN UI --- */
-        .admin-header { background: var(--dark-bg); color: white; padding: 30px 20px; border-radius: 0 0 30px 30px; }
-        .admin-nav { display: flex; gap: 10px; padding: 15px; overflow-x: auto; background: #f1f5f9; }
-        .nav-btn { padding: 10px 20px; border-radius: 20px; border: none; background: white; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .nav-btn.active { background: var(--accent); color: white; }
+        /* Headers */
+        .header { background: var(--dark); color: white; padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 25px 25px; }
+        .p-strip { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; margin: -25px 15px 15px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .p-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
 
-        .admin-card { background: white; margin: 15px; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .input-group { margin-bottom: 15px; }
-        label { font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 14px; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 14px; box-sizing: border-box; transition: 0.3s; }
-        input:focus { border-color: var(--accent); outline: none; }
-
-        .action-btn { background: var(--accent); color: white; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        /* Form Elements */
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-family: inherit; }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
         
-        /* --- STUDENT UI --- */
-        .stu-header { background: linear-gradient(135deg, var(--accent), #3f37c9); color: white; padding: 40px 20px 60px; border-radius: 0 0 40px 40px; }
-        .profile-overlay { background: white; margin: -40px 20px 20px; padding: 20px; border-radius: 25px; display: flex; align-items: center; gap: 15px; box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
-        .p-img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        /* Grid & Badges */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; }
+        .item { background: #f8fafc; padding: 15px 5px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid #eee; }
+        .item i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .item span { font-size: 11px; font-weight: 700; color: #64748b; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; color: white; }
 
-        /* Tables & Lists */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th { text-align: left; font-size: 11px; text-transform: uppercase; color: var(--text-muted); padding: 10px; border-bottom: 1px solid #f1f5f9; }
-        .data-table td { padding: 15px 10px; border-bottom: 1px solid #f8fafc; font-size: 14px; font-weight: 500; }
-        .status-pill { padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        /* Nav Bar */
+        .nav { position: fixed; bottom: 0; width: 100%; max-width: 450px; background: white; display: flex; height: 75px; border-top: 1px solid #eee; align-items: center; z-index: 1000; }
+        .nav-link { flex: 1; text-align: center; color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .nav-link.active { color: var(--primary); }
+        .center-btn { background: var(--primary); color: white !important; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translateY(-20px); font-size: 22px; box-shadow: 0 5px 15px rgba(67,97,238,0.3); }
 
-        /* Navigation Bar */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; height: 80px; align-items: center; justify-content: space-around; border-top: 1px solid #f1f5f9; z-index: 2000; }
-        .nav-tab { color: #94a3b8; text-align: center; cursor: pointer; flex: 1; font-size: 10px; font-weight: bold; }
-        .nav-tab.active { color: var(--accent); }
-        .nav-tab i { font-size: 24px; display: block; margin-bottom: 4px; }
-        .center-fab { background: var(--accent); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; margin-top: -40px; box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4); border: 5px solid white; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; text-align: left; font-size: 13px; }
     </style>
 </head>
 <body>
 
 <div class="app">
-
-    <div id="scr-login" style="padding: 100px 40px; text-align: center;">
-        <h1 style="color: var(--accent); font-size: 32px; letter-spacing: -1px;">RPS PORTAL</h1>
-        <p style="color: var(--text-muted); margin-bottom: 40px;">Welcome to Digital Schooling</p>
-        <input type="text" id="l-id" placeholder="Mobile ID">
+    <div id="scr-login" style="padding: 100px 30px; text-align: center;">
+        <h1 style="color: var(--primary); font-size: 30px;">RPS PORTAL</h1>
+        <input type="text" id="l-id" placeholder="Mobile / User ID">
         <input type="password" id="l-pass" placeholder="Password">
-        <button class="action-btn" style="margin-top:20px;" onclick="sys.login()">Sign In</button>
+        <button class="btn" style="margin-top:15px;" onclick="sys.login()">Login Now</button>
     </div>
 
     <div id="scr-admin" class="hidden">
-        <div class="admin-header">
-            <h2 style="margin:0;">Control Center</h2>
-            <p style="opacity: 0.7; font-size: 12px;">Manage Students, Results & Attendance</p>
+        <div class="header"><b>ADMIN CONSOLE</b> <button onclick="location.reload()" style="color:white; background:none; border:none;">Logout</button></div>
+        <div class="card">
+            <h4>Update News/Alerts</h4>
+            <textarea id="adm-news" placeholder="Write new school alerts here..."></textarea>
+            <button class="btn" onclick="sys.updateNews()">Push News Update</button>
         </div>
-        <div class="admin-nav">
-            <button class="nav-btn active" onclick="sys.admTab('reg')">Registration</button>
-            <button class="nav-btn" onclick="sys.admTab('att')">Attendance</button>
-            <button class="nav-btn" onclick="sys.admTab('res')">Results</button>
-            <button class="nav-btn" onclick="location.reload()">Logout</button>
+        <div class="card" style="background:#f0f9ff;">
+            <h4>Manage Students</h4>
+            <input type="text" id="a-id" placeholder="Mobile ID">
+            <input type="text" id="a-name" placeholder="Full Name">
+            <input type="password" id="a-pass" placeholder="Set Password">
+            <input type="file" id="a-pic" accept="image/*">
+            <button class="btn" onclick="sys.reg()">Register Student</button>
         </div>
-
-        <div id="adm-reg" class="admin-card">
-            <h3>Add Student</h3>
-            <div class="input-group"><label>MOBILE NUMBER</label><input type="text" id="a-id"></div>
-            <div class="input-group"><label>FULL NAME</label><input type="text" id="a-name"></div>
-            <div class="input-group"><label>SET PASSWORD</label><input type="password" id="a-pass"></div>
-            <div class="input-group"><label>PHOTO</label><input type="file" id="a-pic" accept="image/*"></div>
-            <button class="action-btn" onclick="sys.reg()">Save Profile</button>
-        </div>
-
-        <div id="adm-att" class="admin-card hidden">
-            <h3>Daily Attendance</h3>
-            <label>SELECT STUDENT</label><select id="a-sel-att"></select>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="action-btn" style="background:var(--success)" onclick="sys.mark('Present')">Present</button>
-                <button class="action-btn" style="background:var(--danger)" onclick="sys.mark('Absent')">Absent</button>
+        <div class="card">
+            <h4>Attendance & Marks</h4>
+            <select id="a-sel"></select>
+            <input type="text" id="a-sub" placeholder="Subject Name">
+            <div style="display:flex; gap:10px;"><input type="number" id="a-tot" placeholder="Total"><input type="number" id="a-obt" placeholder="Obt"></div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <button class="btn" style="background:#10b981" onclick="sys.mark('Present')">Present</button>
+                <button class="btn" style="background:#ef4444" onclick="sys.mark('Absent')">Absent</button>
+                <button class="btn" style="background:var(--dark)" onclick="sys.addRes()">Save Mark</button>
             </div>
-        </div>
-
-        <div id="adm-res" class="admin-card hidden">
-            <h3>Add Result Entry</h3>
-            <label>SELECT STUDENT</label><select id="a-sel-res"></select>
-            <div class="input-group"><label>SUBJECT NAME</label><input type="text" id="a-sub"></div>
-            <div style="display:flex; gap:10px;">
-                <div class="input-group"><label>TOTAL</label><input type="number" id="a-tot"></div>
-                <div class="input-group"><label>OBTAINED</label><input type="number" id="a-obt"></div>
-            </div>
-            <button class="action-btn" onclick="sys.addRes()">Update Marksheet</button>
         </div>
     </div>
 
     <div id="scr-student" class="hidden">
-        <div class="stu-header">
-            <h2 style="margin:0;">RPS JAJOD</h2>
-            <small style="opacity: 0.8;" id="live-time"></small>
-        </div>
-        
-        <div class="profile-overlay">
-            <img id="s-img" src="" class="p-img">
-            <div>
-                <h3 id="s-name" style="margin:0;">Student Name</h3>
-                <span id="s-id-txt" style="color:var(--accent); font-size:12px; font-weight:800;">ID: 0000</span>
+        <div class="header"><span>RPS STUDENT</span></div>
+        <div id="v-home">
+            <div class="p-strip">
+                <img id="s-img" src="" class="p-img">
+                <div><h3 id="s-name" style="margin:0;">Name</h3><span id="s-id-txt" style="color:var(--primary); font-size:11px;">ID: 000</span></div>
+            </div>
+            <div class="grid">
+                <div class="item" onclick="sys.nav('att')"><i>📅</i><span>Attendance</span></div>
+                <div class="item" onclick="sys.nav('res')"><i>🏆</i><span>Results</span></div>
+                <div class="item" onclick="sys.nav('hw')"><i>📚</i><span>Homework</span></div>
+            </div>
+            <div class="card" style="background:var(--primary); color:white;">
+                <h4 style="margin:0;">📢 News & Alerts</h4>
+                <p id="st-news-txt" style="font-size:12px; margin-top:10px;">No new alerts.</p>
             </div>
         </div>
 
-        <div id="v-home" style="padding: 10px 20px;">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div class="admin-card" style="margin:0; text-align:center;" onclick="sys.nav('att')"><i>📅</i><br><b>Attendance</b></div>
-                <div class="admin-card" style="margin:0; text-align:center;" onclick="sys.nav('res')"><i>🏆</i><br><b>Results</b></div>
+        <div id="v-profile" class="hidden" style="padding:20px; text-align:center;">
+            <img id="sp-img" src="" style="width:120px; height:120px; border-radius:50%; border:5px solid var(--primary);">
+            <h2 id="sp-name">Name</h2>
+            <p id="sp-id">ID: 000</p>
+            <div class="card" style="text-align:left;">
+                <p><b>School:</b> RPS Jajod</p>
+                <p><b>Status:</b> Active Student</p>
+                <p><b>Session:</b> 2026-27</p>
             </div>
-            <div class="admin-card" style="margin:15px 0; background: var(--accent); color:white;">
-                <h4 style="margin:0;">School Notice</h4>
-                <p style="font-size:12px; opacity:0.9;">Exams starting from May 15th. Please check your schedule.</p>
-            </div>
+            <button class="btn" onclick="sys.nav('home')">Back</button>
         </div>
 
         <div id="v-data" class="hidden" style="padding:20px;">
             <h2 id="d-title">Title</h2>
             <div id="d-body"></div>
-            <button class="action-btn" style="background:var(--dark-bg); margin-top:20px;" onclick="sys.nav('home')">Back to Dashboard</button>
+            <button class="btn" style="background:var(--dark); margin-top:20px;" onclick="sys.nav('home')">Back</button>
         </div>
 
-        <div class="bottom-nav">
-            <div class="nav-tab active" onclick="sys.nav('home')"><i>🏠</i>Home</div>
-            <div class="nav-tab"><i>👤</i>Profile</div>
-            <div class="nav-tab center-fab" onclick="sys.nav('home')">🔳</div>
-            <div class="nav-tab"><i>🔔</i>Alerts</div>
-            <div class="nav-tab"><i>🏢</i>News</div>
+        <div class="nav">
+            <div class="nav-link" id="n-home" onclick="sys.nav('home')">🏠<br>Home</div>
+            <div class="nav-link" id="n-prof" onclick="sys.nav('profile')">👤<br>Profile</div>
+            <div class="nav-link center-btn" onclick="sys.nav('home')">🔳</div>
+            <div class="nav-link" onclick="sys.nav('home')">🔔<br>Updates</div>
+            <div class="nav-link" onclick="alert('RPS News Feed is active!')">🏢<br>News</div>
         </div>
     </div>
-
 </div>
 
 <script>
 const sys = {
-    db: JSON.parse(localStorage.getItem('rps_v9_db')) || [],
+    db: JSON.parse(localStorage.getItem('rps_v11_db')) || [],
+    news: localStorage.getItem('rps_news') || "Welcome to the new portal!",
     u: null,
 
     login: function() {
-        const id = document.getElementById('l-id').value;
-        const ps = document.getElementById('l-pass').value;
+        const id = document.getElementById('l-id').value, ps = document.getElementById('l-pass').value;
         if(id === "9999" && ps === "RPS@123") { this.show('scr-admin'); this.refresh(); return; }
         const user = this.db.find(x => x.id === id && x.ps === ps);
-        if(user) { this.u = user; this.show('scr-student'); this.load(); } else alert("Access Denied!");
+        if(user) { this.u = user; this.show('scr-student'); this.load(); } else alert("Wrong ID/Pass");
     },
 
-    admTab: function(tab) {
-        document.querySelectorAll('.admin-card').forEach(c => c.classList.add('hidden'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('adm-'+tab).classList.remove('hidden');
-        event.target.classList.add('active');
+    updateNews: function() {
+        const txt = document.getElementById('adm-news').value;
+        localStorage.setItem('rps_news', txt);
+        this.news = txt;
+        alert("News updated for all students!");
     },
 
     reg: function() {
         const id = document.getElementById('a-id').value, name = document.getElementById('a-name').value, ps = document.getElementById('a-pass').value, f = document.getElementById('a-pic').files[0];
-        if(!id || !name || !ps) return alert("Fill all details!");
         const save = (img) => {
             const data = { id, name, ps, img:img||'', att:[], res:[] };
-            this.db.push(data); localStorage.setItem('rps_v9_db', JSON.stringify(this.db));
-            alert("Student Saved!"); this.refresh();
+            this.db.push(data); this.sync(); alert("Registered!"); this.refresh();
         };
         if(f) { const r = new FileReader(); r.readAsDataURL(f); r.onload = () => save(r.result); } else save();
     },
 
     mark: function(st) {
-        const id = document.getElementById('a-sel-att').value;
-        const idx = this.db.findIndex(x => x.id === id);
+        const id = document.getElementById('a-sel').value, idx = this.db.findIndex(x => x.id === id);
         this.db[idx].att.unshift({ d: new Date().toLocaleDateString(), st });
         this.sync(); alert("Attendance Logged!");
     },
 
     addRes: function() {
-        const id = document.getElementById('a-sel-res').value, sub = document.getElementById('a-sub').value, t = document.getElementById('a-tot').value, o = document.getElementById('a-obt').value;
-        if(!sub || !t || !o) return alert("Enter marks!");
+        const id = document.getElementById('a-sel').value, sub = document.getElementById('a-sub').value, t = document.getElementById('a-tot').value, o = document.getElementById('a-obt').value;
         const idx = this.db.findIndex(x => x.id === id);
         this.db[idx].res.push({ sub, t, o });
-        this.sync(); alert("Result Published!");
+        this.sync(); alert("Result Added!");
     },
 
     load: function() {
         document.getElementById('s-name').innerText = this.u.name;
         document.getElementById('s-id-txt').innerText = "ID: " + this.u.id;
-        document.getElementById('s-img').src = this.u.img || "https://via.placeholder.com/65";
+        document.getElementById('s-img').src = this.u.img || "https://via.placeholder.com/55";
+        document.getElementById('sp-name').innerText = this.u.name;
+        document.getElementById('sp-id').innerText = "Student ID: " + this.u.id;
+        document.getElementById('sp-img').src = this.u.img || "https://via.placeholder.com/120";
+        document.getElementById('st-news-txt').innerText = this.news;
     },
 
     nav: function(v) {
-        if(v === 'home') { document.getElementById('v-home').classList.remove('hidden'); document.getElementById('v-data').classList.add('hidden'); return; }
         document.getElementById('v-home').classList.add('hidden');
-        document.getElementById('v-data').classList.remove('hidden');
-        let b = document.getElementById('d-body');
-        if(v === 'att') {
-            document.getElementById('d-title').innerText = "Attendance Log";
-            b.innerHTML = `<table class="data-table"><tr><th>Date</th><th>Status</th></tr>` + this.u.att.map(a => `<tr><td>${a.d}</td><td><span class="status-pill" style="background:${a.st=='Present'?'#ecfdf5':'#fef2f2'}; color:${a.st=='Present'?'#10b981':'#ef4444'}">${a.st}</span></td></tr>`).join('') + `</table>`;
-        }
-        if(v === 'res') {
-            document.getElementById('d-title').innerText = "Marksheet";
-            b.innerHTML = `<table class="data-table"><tr><th>Subject</th><th>Score</th><th>%</th></tr>` + this.u.res.map(r => `<tr><td>${r.sub}</td><td>${r.o}/${r.t}</td><td style="color:var(--accent)">${(r.o/r.t*100).toFixed(1)}%</td></tr>`).join('') + `</table>`;
+        document.getElementById('v-data').classList.add('hidden');
+        document.getElementById('v-profile').classList.add('hidden');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+        if(v === 'home') { document.getElementById('v-home').classList.remove('hidden'); document.getElementById('n-home').classList.add('active'); }
+        else if(v === 'profile') { document.getElementById('v-profile').classList.remove('hidden'); document.getElementById('n-prof').classList.add('active'); }
+        else {
+            document.getElementById('v-data').classList.remove('hidden');
+            let b = document.getElementById('d-body');
+            if(v === 'att') {
+                document.getElementById('d-title').innerText = "Attendance History";
+                b.innerHTML = `<table><tr><th>Date</th><th>Status</th></tr>` + this.u.att.map(a => `<tr><td>${a.d}</td><td><span class="badge" style="background:${a.st=='Present'?'#10b981':'#ef4444'}">${a.st}</span></td></tr>`).join('') + `</table>`;
+            }
+            if(v === 'res') {
+                document.getElementById('d-title').innerText = "Academic Result";
+                b.innerHTML = `<table><tr><th>Subject</th><th>Marks</th><th>%</th></tr>` + this.u.res.map(r => `<tr><td>${r.sub}</td><td>${r.o}/${r.t}</td><td>${(r.o/r.t*100).toFixed(1)}%</td></tr>`).join('') + `</table>`;
+            }
         }
     },
 
-    refresh: function() {
-        const h = this.db.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        document.getElementById('a-sel-att').innerHTML = h; document.getElementById('a-sel-res').innerHTML = h;
-    },
-
-    sync: function() { localStorage.setItem('rps_v9_db', JSON.stringify(this.db)); },
+    refresh: function() { document.getElementById('a-sel').innerHTML = this.db.map(s => `<option value="${s.id}">${s.name}</option>`).join(''); },
+    sync: function() { localStorage.setItem('rps_v11_db', JSON.stringify(this.db)); },
     show: function(id) { document.querySelectorAll('.app > div').forEach(d => d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
 };
-setInterval(() => { document.getElementById('live-time').innerText = new Date().toLocaleString(); }, 1000);
 </script>
 </body>
 </html>
