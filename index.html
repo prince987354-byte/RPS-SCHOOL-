@@ -3,226 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Jajod - Admin Suite</title>
+    <title>RPS Jajod - Ultimate Management</title>
     <style>
-        :root { --dark: #0d1b3e; --blue: #007BFF; --bg: #f4f7f9; --border: #dee2e6; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; }
-        .app { width: 100%; max-width: 480px; min-height: 100vh; background: white; margin: 0 auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; }
+        :root { --blue: #007BFF; --navy: #0d1b3e; --bg: #f5f7fa; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: #333; overflow-x: hidden; }
+        .app { width: 100%; max-width: 480px; min-height: 100vh; background: var(--white); margin: 0 auto; position: relative; box-shadow: 0 0 25px rgba(0,0,0,0.1); padding-bottom: 80px; }
         .hidden { display: none !important; }
-        
-        /* UI Components */
-        .header { background: var(--dark); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; position: sticky; top: 0; z-index: 100; }
-        .card { padding: 15px; border-bottom: 1px solid #eee; }
-        .section-label { font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase; padding: 15px 15px 5px; display: block; }
-        
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .btn { background: var(--blue); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-sm { padding: 5px 10px; font-size: 12px; width: auto; margin: 0; }
 
-        /* Student List */
-        .stu-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #f0f0f0; }
-        .stu-info b { display: block; font-size: 15px; }
-        .stu-info span { font-size: 12px; color: #666; }
+        /* Animations */
+        .page-entry { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-        /* Student Menu */
-        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #eee; border-top: 1px solid #eee; }
-        .menu-box { background: white; padding: 20px 10px; text-align: center; cursor: pointer; }
-        .menu-icon { font-size: 24px; display: block; margin-bottom: 5px; }
-        .menu-label { font-size: 12px; font-weight: 500; }
+        /* UI Headers */
+        .top-bar { background: var(--navy); color: white; padding: 18px 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .logout { font-size: 12px; border: 1px solid #ffffff66; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
 
-        /* Attendance List */
-        .att-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-        .status-p { color: #28a745; font-weight: bold; }
-        .status-a { color: #dc3545; font-weight: bold; }
+        /* Dashboard Grid Styling */
+        .section-header { padding: 15px 20px 5px; font-size: 16px; font-weight: bold; color: var(--navy); }
+        .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 10px 20px; }
+        .item { background: #fff; border: 1px solid #f0f0f0; border-radius: 12px; padding: 18px 5px; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .item:active { transform: scale(0.92); background: #f0f7ff; }
+        .item i { font-size: 26px; display: block; margin-bottom: 8px; }
+        .item span { font-size: 11px; font-weight: 500; color: #555; display: block; line-height: 1.2; }
+
+        /* Bottom Nav Bar */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; height: 70px; border-top: 1px solid #eee; z-index: 100; }
+        .nav-link { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; font-size: 10px; cursor: pointer; font-weight: bold; }
+        .nav-link.active { color: var(--blue); }
+        .nav-link.center-btn { background: var(--blue); color: white; width: 55px; height: 55px; border-radius: 50%; margin-top: -25px; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+
+        /* Forms */
+        .card { background: white; margin: 15px; padding: 15px; border-radius: 15px; border: 1px solid #eee; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .submit-btn { background: var(--blue); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app">
 
-    <div id="sc-login" style="padding: 100px 30px; text-align: center;">
-        <h1 style="color: var(--dark); margin-bottom: 5px;">RPS JAJOD</h1>
-        <p style="color: #666; margin-bottom: 40px;">Official Management Portal</p>
-        <input type="text" id="login-id" placeholder="Mobile Number or Username">
-        <button class="btn" onclick="ctrl.login()">Login to Portal</button>
+    <div id="sc-login" style="padding: 100px 40px; text-align: center;">
+        <h1 style="color: var(--navy);">RPS LOGIN</h1>
+        <input type="text" id="log-val" placeholder="Mobile Number or Username">
+        <button class="submit-btn" onclick="app.login()">Sign In</button>
     </div>
 
-    <div id="sc-teacher" class="hidden">
-        <div class="header"><span>ADMIN CONTROL</span> <button class="btn btn-sm" onclick="location.reload()">LOGOUT</button></div>
+    <div id="sc-admin" class="hidden page-entry">
+        <div class="top-bar"><span>TEACHER CONTROL</span> <span class="logout" onclick="location.reload()">Logout</span></div>
         
-        <span class="section-label">Selected Student: <span id="target-name" style="color: var(--blue);">None</span></span>
         <div class="card">
-            <input type="text" id="t-mob" placeholder="Mobile (Login ID) *">
+            <h3>Student Profile Management</h3>
+            <input type="text" id="t-id" placeholder="Mobile ID (Required)">
             <input type="text" id="t-name" placeholder="Full Name">
-            <input type="text" id="t-class" placeholder="Class">
-            <input type="number" id="t-fees" placeholder="Pending Fees (₹)">
-            <label style="font-size: 12px;">Profile Photo:</label>
-            <input type="file" id="t-photo" accept="image/*">
-            <button class="btn" onclick="ctrl.saveStudent()">Save / Update Student</button>
+            <input type="file" id="t-photo">
+            <button class="submit-btn" onclick="app.saveStudent()">Register/Update Student</button>
         </div>
 
-        <div id="specific-controls" class="hidden">
-            <span class="section-label">Update Individual Content</span>
-            <div class="card" style="background: #eef6ff;">
-                <select id="content-type">
-                    <option value="hw">Homework</option>
-                    <option value="exam">Exam Details</option>
-                    <option value="tt">Timetable</option>
-                </select>
-                <textarea id="content-val" placeholder="Enter details for THIS student..."></textarea>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" style="background: #28a745;" onclick="ctrl.markAtt('Present')">Mark Present</button>
-                    <button class="btn" style="background: #dc3545;" onclick="ctrl.markAtt('Absent')">Mark Absent</button>
-                </div>
-                <button class="btn" style="background: #333; margin-top: 10px;" onclick="ctrl.saveIndividual()">Update Personal Files</button>
-            </div>
+        <div class="card" style="background:#f0f7ff;">
+            <h3>Academic Update (Select Student)</h3>
+            <select id="t-select-stu"></select>
+            <select id="t-feat-key">
+                <option value="exam">Exam Table</option>
+                <option value="hw">Daily Homework</option>
+                <option value="sy">Syllabus</option>
+                <option value="tt">Timetable</option>
+                <option value="fees">Fees Overview</option>
+                <option value="tr">Transport Info</option>
+                <option value="no">Notice Board</option>
+                <option value="lec">Lectures/Videos</option>
+                <option value="rep">Competition Exam Report</option>
+                <option value="rc">Report Card Data</option>
+            </select>
+            <textarea id="t-feat-val" placeholder="Paste link or type text here..."></textarea>
+            <button class="submit-btn" onclick="app.updateFeat()">Push Update to Student</button>
         </div>
 
-        <span class="section-label">Student Directory</span>
-        <div id="directory"></div>
+        <div class="card">
+            <h3>Incoming Leave Applications</h3>
+            <div id="admin-leaves" style="font-size: 13px;">No applications yet.</div>
+        </div>
     </div>
 
-    <div id="sc-student" class="hidden">
-        <div class="header"><span>STUDENT PORTAL</span> <button class="btn btn-sm" onclick="location.reload()">LOGOUT</button></div>
+    <div id="sc-student" class="hidden page-entry">
+        <div class="top-bar"><span>RPS JAJOD</span> <span id="s-user-display" style="font-size:12px;">Welcome</span></div>
         
-        <div class="card" style="display: flex; align-items: center; gap: 15px;">
-            <img id="s-img" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--blue); object-fit: cover;">
-            <div>
-                <h2 id="s-name" style="margin:0; font-size: 18px;">Student Name</h2>
-                <span id="s-class" style="color:#666;">Class Details</span>
+        <div id="v-home">
+            <div class="section-header">Academic Overview</div>
+            <div class="menu-grid">
+                <div class="item" onclick="app.open('exam', 'Exam Schedule')"><i>📅</i><span>Exam</span></div>
+                <div class="item" onclick="app.open('hw', 'Daily Homework')"><i>📝</i><span>Homework</span></div>
+                <div class="item" onclick="app.open('sy', 'Syllabus')"><i>📑</i><span>Syllabus</span></div>
+                <div class="item" onclick="app.open('tt', 'Timetable')"><i>🕰️</i><span>Timetable</span></div>
+                <div class="item" onclick="app.open('rep', 'Competition Report')"><i>🏆</i><span>Competition Exam Report</span></div>
+            </div>
+
+            <div class="section-header">Student Records</div>
+            <div class="menu-grid">
+                <div class="item" onclick="app.open('att', 'Attendance History')"><i>📅</i><span>Attendance</span></div>
+                <div class="item" onclick="app.viewLeave()"><i>✉️</i><span>Leave Application</span></div>
+                <div class="item" onclick="app.open('fb', 'Feedback')"><i>💬</i><span>Feedback/ Suggestions</span></div>
+                <div class="item" onclick="app.open('rc', 'Report Card')"><i>📜</i><span>Report Card</span></div>
+                <div class="item" onclick="app.open('cc', 'Copy Checking')"><i>🖊️</i><span>Copy Checking</span></div>
+            </div>
+
+            <div class="section-header">School Facilities</div>
+            <div class="menu-grid">
+                <div class="item" onclick="app.open('ev', 'School Events')"><i>🎭</i><span>Events</span></div>
+                <div class="item" onclick="app.open('fees', 'Fees Status')"><i>💳</i><span>Fees Overview</span></div>
+                <div class="item" onclick="app.open('tr', 'Transport Details')"><i>🚌</i><span>Transport</span></div>
+                <div class="item" onclick="app.open('lib', 'Library')"><i>📚</i><span>Library</span></div>
+                <div class="item" onclick="app.open('no', 'Notices')"><i>📢</i><span>Notices</span></div>
+                <div class="item" onclick="app.open('lec', 'Video Lectures')"><i>📺</i><span>Lectures</span></div>
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #eee;">
-            <div style="padding: 15px; text-align: center; border-right: 1px solid #eee;">
-                <small style="color: #888;">ATTENDANCE</small><br><b id="s-att-count" style="font-size: 20px;">0</b>
-            </div>
-            <div style="padding: 15px; text-align: center; color: #dc3545;">
-                <small style="color: #888;">PENDING FEES</small><br><b id="s-fees-val" style="font-size: 20px;">₹0</b>
-            </div>
+        <div id="v-detail" class="hidden" style="padding:20px;">
+            <h2 id="det-title" style="color:var(--navy)">Title</h2>
+            <hr>
+            <div id="det-body" style="white-space: pre-wrap; background:#f9f9f9; padding:15px; border-radius:10px; min-height:200px;"></div>
+            <button class="submit-btn" onclick="app.nav('home')">Go Back</button>
         </div>
 
-        <div class="menu-grid">
-            <div class="menu-box" onclick="ctrl.view('hw', 'Homework')"><span class="menu-icon">📚</span><span class="menu-label">Homework</span></div>
-            <div class="menu-box" onclick="ctrl.view('exam', 'Exam')"><span class="menu-icon">📝</span><span class="menu-label">Exam</span></div>
-            <div class="menu-box" onclick="ctrl.view('tt', 'Timetable')"><span class="menu-icon">📅</span><span class="menu-label">Timetable</span></div>
-            <div class="menu-box" onclick="ctrl.view('att', 'Attendance')"><span class="menu-icon">✅</span><span class="menu-label">My History</span></div>
-            <div class="menu-box"><span class="menu-icon">🚌</span><span class="menu-label">Transport</span></div>
-            <div class="menu-box"><span class="menu-icon">🔔</span><span class="menu-label">Notice</span></div>
+        <div id="v-leave" class="hidden" style="padding:20px;">
+            <h2>Apply for Leave</h2>
+            <textarea id="leave-msg" placeholder="Write reason for leave and dates..." style="height:150px;"></textarea>
+            <button class="submit-btn" onclick="app.submitLeave()">Submit Application</button>
+            <button class="submit-btn" style="background:#666;" onclick="app.nav('home')">Cancel</button>
         </div>
 
-        <div id="sc-detail" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:200;">
-            <div class="header"><span id="det-title">Section</span> <button class="btn btn-sm" onclick="ctrl.closeView()">CLOSE</button></div>
-            <div id="det-body" style="padding: 20px; white-space: pre-wrap; line-height: 1.6;"></div>
+        <div class="nav-bar">
+            <div class="nav-link active" onclick="app.nav('home')">🏠<br>Home</div>
+            <div class="nav-link" onclick="alert('Profile Coming Soon')">👤<br>My Child</div>
+            <div class="nav-link center-btn" onclick="app.nav('home')">🔳<br>Menu</div>
+            <div class="nav-link" onclick="app.open('no', 'Latest Updates')">🔔<br>Updates</div>
+            <div class="nav-link" onclick="alert('No News today')">🏢<br>Newsfeed</div>
         </div>
     </div>
+
 </div>
 
 <script>
-const ctrl = {
-    db: JSON.parse(localStorage.getItem('rps_final_v5')) || [],
-    target: null,
+const app = {
+    db: JSON.parse(localStorage.getItem('rps_full_system')) || [],
     user: null,
 
     login: function() {
-        const val = document.getElementById('login-id').value.trim();
-        if(val === "9999") { this.show('sc-teacher'); this.renderDir(); return; }
+        const val = document.getElementById('log-val').value.trim();
+        if(val === "9999") { this.show('sc-admin'); this.refreshAdmin(); return; }
         const s = this.db.find(x => x.mobile === val || x.name.toLowerCase() === val.toLowerCase());
-        if(s) { this.user = s; this.loadStu(); } else { alert("Account not found!"); }
+        if(s) { this.user = s; this.show('sc-student'); document.getElementById('s-user-display').innerText = s.name; } 
+        else { alert("User not registered!"); }
     },
 
     saveStudent: function() {
-        const mob = document.getElementById('t-mob').value;
-        if(!mob) return alert("Mobile ID Required!");
-        
-        const save = (img) => {
-            const existing = this.db.find(x => x.mobile === mob);
-            const data = {
-                mobile: mob,
-                name: document.getElementById('t-name').value,
-                class: document.getElementById('t-class').value,
-                fees: document.getElementById('t-fees').value || 0,
-                img: img || (existing ? existing.img : ""),
-                hw: existing ? existing.hw : "",
-                exam: existing ? existing.exam : "",
-                tt: existing ? existing.tt : "",
-                attendance: existing ? existing.attendance : []
-            };
-            const idx = this.db.findIndex(x => x.mobile === mob);
-            if(idx > -1) this.db[idx] = data; else this.db.push(data);
-            localStorage.setItem('rps_final_v5', JSON.stringify(this.db));
-            alert("Student Record Saved.");
-            this.renderDir();
+        const id = document.getElementById('t-id').value;
+        if(!id) return alert("Mobile ID required!");
+        const existing = this.db.find(x => x.mobile === id);
+        const data = {
+            mobile: id, name: document.getElementById('t-name').value,
+            exam:'', hw:'', sy:'', tt:'', fees:'', tr:'', no:'', lec:'', rep:'', rc:'', att:[], leaves:[], fb:'', cc:'', ev:'', lib:''
         };
-
-        const file = document.getElementById('t-photo').files[0];
-        if(file) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => save(reader.result);
-        } else { save(); }
+        const idx = this.db.findIndex(x => x.mobile === id);
+        if(idx > -1) this.db[idx].name = data.name; else this.db.push(data);
+        localStorage.setItem('rps_full_system', JSON.stringify(this.db));
+        this.refreshAdmin(); alert("Student Record Updated!");
     },
 
-    renderDir: function() {
-        document.getElementById('directory').innerHTML = this.db.map(s => `
-            <div class="stu-row">
-                <div class="stu-info"><b>${s.name}</b><span>Class: ${s.class} | ID: ${s.mobile}</span></div>
-                <button class="btn btn-sm" onclick="ctrl.selectStu('${s.mobile}')">Manage</button>
-            </div>`).join('');
+    updateFeat: function() {
+        const id = document.getElementById('t-select-stu').value;
+        const key = document.getElementById('t-feat-key').value;
+        const val = document.getElementById('t-feat-val').value;
+        const idx = this.db.findIndex(x => x.mobile === id);
+        this.db[idx][key] = val;
+        localStorage.setItem('rps_full_system', JSON.stringify(this.db));
+        alert("Pushed successfully to " + this.db[idx].name);
     },
 
-    selectStu: function(mob) {
-        this.target = this.db.find(x => x.mobile === mob);
-        document.getElementById('target-name').innerText = this.target.name;
-        document.getElementById('specific-controls').classList.remove('hidden');
-        document.getElementById('t-mob').value = this.target.mobile;
-        document.getElementById('t-name').value = this.target.name;
-        document.getElementById('t-class').value = this.target.class;
-        document.getElementById('t-fees').value = this.target.fees;
-        window.scrollTo(0,0);
+    refreshAdmin: function() {
+        document.getElementById('t-select-stu').innerHTML = this.db.map(s => `<option value="${s.mobile}">${s.name}</option>`).join('');
+        const leaveBox = document.getElementById('admin-leaves');
+        let allLeaves = "";
+        this.db.forEach(s => {
+            s.leaves.forEach(l => {
+                allLeaves += `<div style="border-bottom:1px solid #eee; padding:5px;"><b>${s.name}:</b> ${l}</div>`;
+            });
+        });
+        leaveBox.innerHTML = allLeaves || "No pending leaves.";
     },
 
-    saveIndividual: function() {
-        const type = document.getElementById('content-type').value;
-        const val = document.getElementById('content-val').value;
-        const idx = this.db.findIndex(x => x.mobile === this.target.mobile);
-        this.db[idx][type] = val;
-        localStorage.setItem('rps_final_v5', JSON.stringify(this.db));
-        alert("Updated " + type.toUpperCase() + " for " + this.target.name);
+    submitLeave: function() {
+        const msg = document.getElementById('leave-msg').value;
+        const idx = this.db.findIndex(x => x.mobile === this.user.mobile);
+        this.db[idx].leaves.push(new Date().toLocaleDateString() + ": " + msg);
+        localStorage.setItem('rps_full_system', JSON.stringify(this.db));
+        alert("Leave sent to teacher!");
+        this.nav('home');
     },
 
-    markAtt: function(status) {
-        const date = new Date().toLocaleDateString();
-        const idx = this.db.findIndex(x => x.mobile === this.target.mobile);
-        const exists = this.db[idx].attendance.find(a => a.date === date);
-        if(exists) return alert("Already marked for today!");
-        
-        this.db[idx].attendance.push({ date, status });
-        localStorage.setItem('rps_final_v5', JSON.stringify(this.db));
-        alert("Attendance: " + status);
-    },
-
-    loadStu: function() {
-        this.show('sc-student');
-        document.getElementById('s-name').innerText = this.user.name;
-        document.getElementById('s-class').innerText = "Class " + this.user.class;
-        document.getElementById('s-fees-val').innerText = "₹" + this.user.fees;
-        document.getElementById('s-img').src = this.user.img || "https://via.placeholder.com/70";
-        document.getElementById('s-att-count').innerText = this.user.attendance.filter(a => a.status === 'Present').length;
-    },
-
-    view: function(key, title) {
-        document.getElementById('sc-detail').classList.remove('hidden');
+    open: function(key, title) {
+        this.nav('detail');
         document.getElementById('det-title').innerText = title;
-        if(key === 'att') {
-            const h = this.user.attendance.map(a => `<div class="att-row"><span>${a.date}</span><span class="status-${a.status[0].toLowerCase()}">${a.status}</span></div>`).join('');
-            document.getElementById('det-body').innerHTML = h || "No records.";
-        } else {
-            document.getElementById('det-body').innerText = this.user[key] || "No data updated by teacher.";
-        }
+        document.getElementById('det-body').innerText = this.user[key] || "No data available yet.";
     },
 
-    closeView: function() { document.getElementById('sc-detail').classList.add('hidden'); },
+    nav: function(v) {
+        document.getElementById('v-home').classList.add('hidden');
+        document.getElementById('v-detail').classList.add('hidden');
+        document.getElementById('v-leave').classList.add('hidden');
+        document.getElementById('v-' + v).classList.remove('hidden');
+    },
+    viewLeave: function() { this.nav('leave'); },
     show: function(id) {
         document.querySelectorAll('.app > div').forEach(d => d.classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
@@ -230,5 +220,4 @@ const ctrl = {
 };
 </script>
 </body>
-                    </html>
-    
+</html>
