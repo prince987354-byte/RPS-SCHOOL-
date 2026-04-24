@@ -2,15 +2,237 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Portal Secure Edition</title>
+    <title>RPS Portal - Secure Edition</title>
+    <style>
+        :root { --primary: #4361ee; --dark: #0f172a; --bg: #f8fafc; --white: #ffffff; --error: #ef4444; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background: var(--bg); color: var(--dark); }
+        .app { width: 100%; max-width: 480px; min-height: 100vh; background: var(--white); margin: 0 auto; position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.1); padding-bottom: 90px; }
+        .hidden { display: none !important; }
+
+        /* Login UI */
+        .auth-container { padding: 60px 30px; text-align: center; animation: fadeIn 0.5s; }
+        .logo-circle { width: 80px; height: 80px; background: var(--primary); border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; font-weight: bold; }
+        
+        /* Form Styling */
+        .field-group { text-align: left; margin-bottom: 15px; }
+        label { font-size: 12px; font-weight: 700; color: #64748b; margin-left: 5px; }
+        input, select, textarea { width: 100%; padding: 14px; margin-top: 5px; border: 2px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1); }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-sec { background: var(--dark); margin-top: 5px; }
+
+        /* Header & Profile */
+        .header { background: var(--dark); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .prof-bar { display: flex; align-items: center; gap: 15px; padding: 15px; background: #fff; margin: -20px 15px 15px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .prof-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+
+        /* Grid */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .card-item { background: #f8fafc; padding: 20px 5px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid #e2e8f0; }
+        .card-item i { font-size: 24px; display: block; margin-bottom: 8px; }
+        .card-item span { font-size: 11px; font-weight: 700; }
+
+        /* Bottom Nav */
+        .nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; height: 75px; border-top: 1px solid #f1f5f9; align-items: center; }
+        .nav-link { flex: 1; text-align: center; color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .nav-link.active { color: var(--primary); }
+        .fab { background: var(--primary); color: white !important; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: translateY(-20px); font-size: 20px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
-    <h1>Welcome to RPS Portal Secure Edition</h1>
-    <p>This is a secure version of the RPS Portal.</p>
-    <footer>
-        <p>&copy; 2026 RPS Portal</p>
-    </footer>
+
+<div class="app">
+
+    <div id="scr-login" class="auth-container">
+        <div class="logo-circle">RPS</div>
+        <h2 style="margin-bottom:5px;">Welcome Back</h2>
+        <p style="color:#64748b; margin-bottom:30px;">Login to your portal</p>
+        
+        <div class="field-group">
+            <label>USER ID / MOBILE</label>
+            <input type="text" id="login-id" placeholder="Enter ID">
+        </div>
+        <div class="field-group">
+            <label>PASSWORD</label>
+            <input type="password" id="login-pass" placeholder="••••••••">
+        </div>
+        <button class="btn" onclick="sys.login()">Sign In</button>
+    </div>
+
+    <div id="scr-admin" class="hidden">
+        <div class="header">
+            <b>TEACHER CONSOLE</b>
+            <button onclick="location.reload()" style="background:none; border:1px solid #fff; color:white; padding:4px 8px; border-radius:6px; cursor:pointer;">Logout</button>
+        </div>
+
+        <div style="padding:15px;">
+            <div style="background:#f0f7ff; padding:20px; border-radius:15px; margin-bottom:15px;">
+                <h4 style="margin-top:0;">Add New Student</h4>
+                <input type="text" id="t-id" placeholder="Student Mobile Number">
+                <input type="text" id="t-name" placeholder="Full Name">
+                <input type="password" id="t-pass" placeholder="Set Student Password">
+                <label style="display:block; margin-top:10px; font-size:11px;">Profile Picture:</label>
+                <input type="file" id="t-photo" accept="image/*">
+                <button class="btn" onclick="sys.createStu()">Register Student</button>
+            </div>
+
+            <div style="background:#fff; padding:20px; border-radius:15px; border:1px solid #e2e8f0;">
+                <h4 style="margin-top:0;">Update Academic Info</h4>
+                <select id="adm-stu-list"></select>
+                <select id="adm-key">
+                    <option value="hw">Homework</option>
+                    <option value="exam">Exam Table</option>
+                    <option value="att">Daily Attendance</option>
+                    <option value="res">Results</option>
+                    <option value="no">Notices</option>
+                </select>
+                <textarea id="adm-val" placeholder="Enter details or data..."></textarea>
+                <button class="btn btn-sec" onclick="sys.updateData()">Push Update</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scr-student" class="hidden">
+        <div class="header"><span>RPS JAJOD</span> <span id="st-clock" style="font-size:11px;"></span></div>
+        
+        <div id="st-home">
+            <div class="prof-bar">
+                <img id="st-img" src="" class="prof-img">
+                <div>
+                    <h3 id="st-name" style="margin:0; font-size:16px;">Student Name</h3>
+                    <span id="st-id-txt" style="color:var(--primary); font-size:11px; font-weight:bold;">ID: 000000</span>
+                </div>
+            </div>
+
+            <div style="padding:0 15px;"><label>ACADEMIC PROGRESS</label></div>
+            <div class="grid">
+                <div class="card-item" onclick="sys.view('hw', 'Daily Homework')"><i>📚</i><span>Homework</span></div>
+                <div class="card-item" onclick="sys.view('res', 'Results')"><i>🏆</i><span>Results</span></div>
+                <div class="card-item" onclick="sys.view('att', 'Attendance')"><i>📅</i><span>Attendance</span></div>
+            </div>
+
+            <div style="padding:0 15px;"><label>SCHOOL SERVICES</label></div>
+            <div class="grid">
+                <div class="card-item" onclick="sys.view('exam', 'Exam Schedule')"><i>📝</i><span>Exams</span></div>
+                <div class="card-item" onclick="sys.view('no', 'Notices')"><i>📢</i><span>Notices</span></div>
+                <div class="card-item" onclick="alert('Feature coming soon')"><i>🚌</i><span>Transport</span></div>
+            </div>
+        </div>
+
+        <div id="st-detail" class="hidden" style="padding:20px;">
+            <h2 id="det-title">Details</h2>
+            <div id="det-body" style="background:#f8fafc; padding:20px; border-radius:15px; min-height:300px; white-space:pre-wrap;"></div>
+            <button class="btn btn-sec" onclick="sys.back()">Back to Home</button>
+        </div>
+
+        <div class="nav">
+            <div class="nav-link active" onclick="sys.back()">🏠<br>Home</div>
+            <div class="nav-link" onclick="alert('Profile secure')">👤<br>My Child</div>
+            <div class="nav-link fab" onclick="sys.back()">🔳</div>
+            <div class="nav-link" onclick="sys.view('no', 'Updates')">🔔<br>Updates</div>
+            <div class="nav-link">🏢<br>News</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const sys = {
+    db: JSON.parse(localStorage.getItem('rps_secure_v1')) || [],
+    user: null,
+
+    login: function() {
+        const id = document.getElementById('login-id').value.trim();
+        const pass = document.getElementById('login-pass').value.trim();
+
+        // Admin Check
+        if(id === "9999" && pass === "RPS@123") {
+            this.show('scr-admin');
+            this.refreshAdmin();
+            return;
+        }
+
+        // Student Check
+        const u = this.db.find(x => x.mobile === id && x.pass === pass);
+        if(u) {
+            this.user = u;
+            this.show('scr-student');
+            this.loadStudent();
+        } else {
+            alert("Invalid Credentials! Please check ID or Password.");
+        }
+    },
+
+    createStu: function() {
+        const id = document.getElementById('t-id').value;
+        const name = document.getElementById('t-name').value;
+        const pass = document.getElementById('t-pass').value;
+        const file = document.getElementById('t-photo').files[0];
+
+        if(!id || !name || !pass) return alert("Fill all fields!");
+
+        const save = (img) => {
+            const data = { mobile:id, name, pass, img:img||'', hw:'', res:'', att:'', exam:'', no:'' };
+            const idx = this.db.findIndex(x => x.mobile === id);
+            if(idx > -1) this.db[idx] = data; else this.db.push(data);
+            this.sync();
+            alert("Student Registered! Password: " + pass);
+            this.refreshAdmin();
+        };
+
+        if(file) {
+            const r = new FileReader(); r.readAsDataURL(file);
+            r.onload = () => save(r.result);
+        } else { save(); }
+    },
+
+    updateData: function() {
+        const id = document.getElementById('adm-stu-list').value;
+        const key = document.getElementById('adm-key').value;
+        const val = document.getElementById('adm-val').value;
+        const idx = this.db.findIndex(x => x.mobile === id);
+        this.db[idx][key] = val;
+        this.sync();
+        alert("Data Pushed Successfully!");
+    },
+
+    loadStudent: function() {
+        document.getElementById('st-name').innerText = this.user.name;
+        document.getElementById('st-id-txt').innerText = "STUDENT ID: " + this.user.mobile;
+        document.getElementById('st-img').src = this.user.img || "https://via.placeholder.com/50";
+    },
+
+    view: function(key, title) {
+        document.getElementById('st-home').classList.add('hidden');
+        document.getElementById('st-detail').classList.remove('hidden');
+        document.getElementById('det-title').innerText = title;
+        document.getElementById('det-body').innerText = this.user[key] || "No updates available for " + title;
+    },
+
+    back: function() {
+        document.getElementById('st-home').classList.remove('hidden');
+        document.getElementById('st-detail').classList.add('hidden');
+    },
+
+    refreshAdmin: function() {
+        document.getElementById('adm-stu-list').innerHTML = this.db.map(s => `<option value="${s.mobile}">${s.name}</option>`).join('');
+    },
+
+    show: function(id) {
+        document.querySelectorAll('.app > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    },
+
+    sync: function() { localStorage.setItem('rps_secure_v1', JSON.stringify(this.db)); }
+};
+
+setInterval(() => { 
+    document.getElementById('st-clock').innerText = new Date().toLocaleTimeString(); 
+}, 1000);
+</script>
 </body>
 </html>
