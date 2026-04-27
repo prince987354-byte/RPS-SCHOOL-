@@ -41,8 +41,7 @@
         <input type="text" id="login-id" placeholder="Enter ID">
         <input type="password" id="login-pass" placeholder="Enter Password">
         <button onclick="sys.login()">Sign In</button>
-        <p style="text-align: center; font-size: 10px; color: #aaa; margin-top: 15px;">Admin: Azizkhan / khanaziz</p>
-    </div>
+        </div>
 </div>
 
 <div id="screen-app" class="hidden">
@@ -112,7 +111,6 @@
 </div>
 
 <script>
-    // --- FIREBASE LIVE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyBj8K0fbnu3qZHO8TUOUEV4uOhihLwFEVw",
         authDomain: "rps-sikar-da9d4.firebaseapp.com",
@@ -205,7 +203,7 @@
         syncSList: function() {
             db.ref('students').once('value', (snap) => {
                 const all = snap.val() || {};
-                const cls = this.user.classes.split(',').map(x => x.trim());
+                const cls = (this.user.classes || "").split(',').map(x => x.trim());
                 let html = '<option value="">Choose Student</option>';
                 for(let id in all) {
                     if(cls.includes(all[id].class)) html += `<option value="${id}">${all[id].name} (${all[id].class})</option>`;
@@ -220,10 +218,10 @@
             db.ref('students/' + id).once('value', (snap) => {
                 const s = snap.val();
                 document.getElementById('edit-panel').classList.remove('hidden');
-                document.getElementById('e-f').value = s.f;
-                document.getElementById('e-att').value = s.att;
-                document.getElementById('e-fee').value = s.fee;
-                document.getElementById('e-hw').value = s.hw;
+                document.getElementById('e-f').value = s.f || "";
+                document.getElementById('e-att').value = s.att || "";
+                document.getElementById('e-fee').value = s.fee || "";
+                document.getElementById('e-hw').value = s.hw || "";
                 document.getElementById('s-preview').src = s.pic || "";
                 this.tempPic = s.pic || "";
             });
@@ -251,7 +249,6 @@
         }
     };
 
-    // Connection Watcher
     db.ref(".info/connected").on("value", (snap) => {
         const s = document.getElementById('db-status');
         if (snap.val() === true) { s.innerText = "● LIVE: Sikar Server Active"; s.style.color = "#28a745"; }
