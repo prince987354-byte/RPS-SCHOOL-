@@ -3,288 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Portal</title>
+    <title>RPS Portal Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #1a2a6c; --red: #b21f1f; --bg: #f8f9fa; }
+        :root { --main: #1a2a6c; --red: #b21f1f; --bg: #f0f2f5; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg); color: #333; padding-bottom: 100px; }
-        
-        header { background: var(--main); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 20px 20px; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        /* STUDENT PROFILE DETAILS */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .info-item { background: #fff; border: 1px solid #eee; padding: 10px; border-radius: 10px; font-size: 12px; }
-        .label { color: #888; font-size: 10px; display: block; margin-bottom: 2px; }
-        
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; background: #fdfdfd; }
-        button { background: var(--red); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 10px; }
-
+        body { background: var(--bg); padding-bottom: 90px; }
+        header { background: var(--main); color: white; padding: 25px 20px; border-radius: 0 0 25px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card { background: white; border-radius: 18px; padding: 20px; margin: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); }
+        input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #ddd; font-size: 15px; }
+        button { background: var(--red); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
         .hidden { display: none !important; }
-        .fee-card { background: #fff1f1; border: 1px solid #ffcccc; color: #b21f1f; padding: 15px; border-radius: 12px; }
-        
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0; }
-        .nav-item { text-align: center; font-size: 10px; color: #aaa; flex: 1; }
-        .active-nav { color: var(--main); font-weight: 700; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .info-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border-left: 4px solid var(--main); }
+        .label { font-size: 10px; color: #777; text-transform: uppercase; font-weight: 700; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 15px 0; border-radius: 25px 25px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #999; cursor: pointer; }
+        .nav-active { color: var(--main); font-weight: 800; }
     </style>
 </head>
 <body>
 
 <header>
-    <div id="header-text">
-        <p id="greeting" style="font-size: 10px; opacity: 0.8;">Welcome to</p>
-        <h2 id="display-name">RPS CAMPUS</h2>
-    </div>
-    <div style="font-size: 20px;">🔔</div>
+    <p style="font-size: 11px; opacity: 0.8;">Rajasthan Public School</p>
+    <h2 id="user-display">CAMPUS PORTAL</h2>
 </header>
 
-<div id="login-view" style="padding: 20px;">
-    <div class="card" style="margin-top: 30px; border-top: 5px solid var(--red);">
-        <h2 style="text-align: center; margin-bottom: 20px;">Portal Login</h2>
-        <select id="login-role">
-            <option value="Principal">Principal</option>
-            <option value="Teacher">Teacher</option>
-            <option value="Student">Student</option>
-        </select>
-        <input type="text" id="login-id" placeholder="User ID">
-        <input type="password" id="login-pass" placeholder="Password">
-        <button onclick="portal.login()">Sign In</button>
-        <p style="font-size: 10px; text-align: center; margin-top: 15px; color: #999;">Admin: Azizkhan | Pass: khanaziz</p>
+<div id="view-login" style="padding: 20px;">
+    <div class="card" style="margin-top: 40px;">
+        <h3 style="text-align: center; margin-bottom: 20px;">Secure Sign In</h3>
+        <select id="role"><option value="Principal">Principal</option><option value="Teacher">Teacher</option><option value="Student">Student</option></select>
+        <input type="text" id="uid" placeholder="User ID">
+        <input type="password" id="ups" placeholder="Password">
+        <button onclick="core.login()">Sign In</button>
     </div>
 </div>
 
-<div id="app-view" class="hidden">
-
-    <div id="mod-principal" class="hidden" style="padding: 10px;">
-        <div class="card">
-            <h4>➕ Create Teacher Account</h4>
-            <input type="text" id="new-t-name" placeholder="Full Name">
-            <input type="text" id="new-t-id" placeholder="Assign ID (e.g. T101)">
-            <input type="text" id="new-t-pass" placeholder="Assign Password">
-            <button onclick="portal.addTeacher()">Save Teacher</button>
-        </div>
-        <div class="card">
-            <h4>📋 Staff Records</h4>
-            <div id="t-list-box" style="font-size: 13px; margin-top: 10px;"></div>
-        </div>
-    </div>
-
-    <div id="mod-teacher" class="hidden" style="padding: 10px;">
-        <div class="card" style="background: #eef2ff; border: none;">
-            <h4 id="t-welcome-msg">Teacher Dashboard</h4>
+<div id="view-dash" class="hidden">
+    <div id="sec-home">
+        <div id="mod-principal" class="hidden">
+            <div class="card">
+                <h4>Add Teacher</h4>
+                <input type="text" id="t-name" placeholder="Name"><input type="text" id="t-id" placeholder="ID"><input type="text" id="t-pass" placeholder="Pass">
+                <button onclick="core.addTeacher()">Register Staff</button>
+            </div>
         </div>
 
-        <div class="card">
-            <h4>🆕 New Student Enrollment</h4>
-            <input type="text" id="ns-name" placeholder="Student Name">
-            <input type="text" id="ns-id" placeholder="Roll No / ID">
-            <input type="text" id="ns-sr" placeholder="SR No (e.g. 1229)">
-            <input type="text" id="ns-pass" placeholder="Login Password">
-            <button onclick="portal.addStudent()">Register Student</button>
+        <div id="mod-teacher" class="hidden">
+            <div class="card">
+                <h4>New Student</h4>
+                <input type="text" id="s-name" placeholder="Name"><input type="text" id="s-id" placeholder="ID"><input type="text" id="s-sr" placeholder="SR No"><input type="text" id="s-pass" placeholder="Pass">
+                <button onclick="core.addStudent()">Add Student</button>
+            </div>
+            <div class="card">
+                <h4>Update Attendance/Fees</h4>
+                <select id="sel-student" onchange="core.loadEdit()"><option value="">Select Student</option></select>
+                <div id="edit-area" class="hidden">
+                    <input type="text" id="e-att" placeholder="Attendance %"><input type="text" id="e-fee" placeholder="Pending Fees">
+                    <button onclick="core.saveEdit()">Update Data</button>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-            <h4>✍️ Edit Student Data</h4>
-            <select id="edit-s-select" onchange="portal.loadStudentForEdit()">
-                <option value="">Select Student to Edit</option>
-            </select>
-            <div id="edit-fields" class="hidden">
-                <input type="text" id="e-father" placeholder="Father Name">
-                <input type="text" id="e-mother" placeholder="Mother Name">
-                <input type="text" id="e-fcontact" placeholder="Father Mobile">
-                <input type="text" id="e-mcontact" placeholder="Mother Mobile">
-                <input type="text" id="e-dob" placeholder="DOB (e.g. 13 Apr, 2009)">
-                <input type="text" id="e-att" placeholder="Attendance % (e.g. 94.12)">
-                <input type="text" id="e-fees" placeholder="Pending Fees (e.g. 27000)">
-                <textarea id="e-hw" placeholder="Homework for today..."></textarea>
-                <button onclick="portal.saveStudentEdit()">Update All Features</button>
+        <div id="mod-student" class="hidden">
+            <div class="card" style="text-align:center;">
+                <h3 id="st-home-name">Welcome</h3>
+                <p>Session 2026-27</p>
+            </div>
+            <div class="card" style="background:#fff1f1; color:var(--red);">
+                <span class="label">Pending Fees</span>
+                <h2 id="st-fee-home">₹ 0</h2>
             </div>
         </div>
     </div>
 
-    <div id="mod-student" class="hidden" style="padding: 10px;">
-        <div class="card" style="text-align: center; background: var(--main); color: white;">
-            <h2 id="st-ui-name">---</h2>
-            <p id="st-ui-session" style="font-size: 12px; opacity: 0.8;">Session: 2026-2027</p>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <div class="card" style="flex: 1; text-align: center;">
-                <span class="label">Attendance</span>
-                <h3 id="st-ui-att">0%</h3>
-            </div>
-            <div class="card" style="flex: 1; text-align: center;">
-                <span class="label">Punch Time</span>
-                <h3>N/A</h3>
-            </div>
-        </div>
-
-        <div class="card fee-card">
-            <span class="label" style="color: var(--red);">Pending Fees</span>
-            <h2 id="st-ui-fees">₹ 0</h2>
-        </div>
-
+    <div id="sec-profile" class="hidden">
         <div class="card">
+            <h3 style="text-align:center; color:var(--main);">My Profile</h3>
             <div class="info-grid">
-                <div class="info-item"><span class="label">Roll No.</span><b id="st-ui-roll">--</b></div>
-                <div class="info-item"><span class="label">SR No.</span><b id="st-ui-sr">--</b></div>
+                <div class="info-box"><span class="label">Name</span><b id="p-name"></b></div>
+                <div class="info-box"><span class="label">Role</span><b id="p-role"></b></div>
             </div>
-            <div class="info-grid">
-                <div class="info-item"><span class="label">Father</span><b id="st-ui-father">--</b></div>
-                <div class="info-item"><span class="label">Mother</span><b id="st-ui-mother">--</b></div>
+            <div id="student-details" class="hidden">
+                <div class="info-grid">
+                    <div class="info-box"><span class="label">Roll No</span><b id="p-roll"></b></div>
+                    <div class="info-box"><span class="label">SR No</span><b id="p-sr"></b></div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-box"><span class="label">Father</span><b id="p-father"></b></div>
+                    <div class="info-box"><span class="label">Mother</span><b id="p-mother"></b></div>
+                </div>
             </div>
-            <div class="info-grid">
-                <div class="info-item"><span class="label">Father Contact</span><b id="st-ui-fcon">--</b></div>
-                <div class="info-item"><span class="label">DOB</span><b id="st-ui-dob">--</b></div>
-            </div>
-        </div>
-
-        <div class="card" style="border-left: 5px solid #fdbb2d;">
-            <h4 style="color: var(--main);">📚 Homework</h4>
-            <p id="st-ui-hw" style="margin-top: 8px; font-size: 14px; color: #555;"></p>
         </div>
     </div>
 </div>
 
-<div id="nav-bar" class="nav hidden">
-    <div class="nav-item active-nav">🏠<br>Home</div>
-    <div class="nav-item">👤<br>My Profile</div>
-    <div class="nav-item" onclick="location.reload()">🚪<br>Logout</div>
+<div id="navbar" class="nav hidden">
+    <div class="nav-item nav-active" id="nav-home" onclick="core.tab('home')">🏠<br>Home</div>
+    <div class="nav-item" id="nav-profile" onclick="core.tab('profile')">👤<br>Profile</div>
+    <div class="nav-item" onclick="location.reload()" style="color:var(--red)">🚪<br>Logout</div>
 </div>
 
 <script>
-const portal = {
+const core = {
     db: {
-        teachers: JSON.parse(localStorage.getItem('rps_v5_t')) || [],
-        students: JSON.parse(localStorage.getItem('rps_v5_s')) || []
+        teachers: JSON.parse(localStorage.getItem('rps_v6_t')) || [],
+        students: JSON.parse(localStorage.getItem('rps_v6_s')) || []
     },
     user: null,
 
-    save: function() {
-        localStorage.setItem('rps_v5_t', JSON.stringify(this.db.teachers));
-        localStorage.setItem('rps_v5_s', JSON.stringify(this.db.students));
+    save: () => {
+        localStorage.setItem('rps_v6_t', JSON.stringify(core.db.teachers));
+        localStorage.setItem('rps_v6_s', JSON.stringify(core.db.students));
     },
 
-    login: function() {
-        const role = document.getElementById('login-role').value;
-        const id = document.getElementById('login-id').value.trim();
-        const pass = document.getElementById('login-pass').value.trim();
+    login: () => {
+        const r = document.getElementById('role').value;
+        const id = document.getElementById('uid').value.trim();
+        const ps = document.getElementById('ups').value.trim();
 
-        if (role === "Principal" && id === "Azizkhan" && pass === "khanaziz") {
-            this.user = { role: "Principal", name: "Principal" };
-        } else if (role === "Teacher") {
-            this.user = this.db.teachers.find(t => t.id === id && t.pass === pass);
-        } else if (role === "Student") {
-            this.user = this.db.students.find(s => s.id === id && s.pass === pass);
-        }
+        if(r === "Principal" && id === "Azizkhan" && ps === "khanaziz") core.user = { role:"Principal", name:"Principal" };
+        else if(r === "Teacher") core.user = core.db.teachers.find(t => t.id === id && t.pass === ps);
+        else if(r === "Student") core.user = core.db.students.find(s => s.id === id && s.pass === ps);
 
-        if (this.user) {
-            this.user.role = this.user.role || role;
-            document.getElementById('login-view').classList.add('hidden');
-            document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('nav-bar').classList.remove('hidden');
-            
-            // DYNAMIC HEADER FIX
-            document.getElementById('greeting').innerText = "Good Afternoon 👋";
-            document.getElementById('display-name').innerText = this.user.name.toUpperCase();
-            
-            this.loadModule();
+        if(core.user) {
+            core.user.role = core.user.role || r;
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dash').classList.remove('hidden');
+            document.getElementById('navbar').classList.remove('hidden');
+            document.getElementById('user-display').innerText = core.user.name.toUpperCase();
+            core.tab('home');
+        } else alert("Error!");
+    },
+
+    tab: (t) => {
+        document.getElementById('sec-home').classList.add('hidden');
+        document.getElementById('sec-profile').classList.add('hidden');
+        document.getElementById('nav-home').classList.remove('nav-active');
+        document.getElementById('nav-profile').classList.remove('nav-active');
+
+        if(t === 'home') {
+            document.getElementById('sec-home').classList.remove('hidden');
+            document.getElementById('nav-home').classList.add('nav-active');
+            core.loadHome();
         } else {
-            alert("❌ Wrong Login Details!");
+            document.getElementById('sec-profile').classList.remove('hidden');
+            document.getElementById('nav-profile').classList.add('nav-active');
+            core.loadProfile();
         }
     },
 
-    loadModule: function() {
-        const r = this.user.role;
-        ['mod-principal', 'mod-teacher', 'mod-student'].forEach(m => document.getElementById(m).classList.add('hidden'));
-
-        if(r === "Principal") {
-            document.getElementById('mod-principal').classList.remove('hidden');
-            this.renderTeachers();
-        } else if(r === "Teacher") {
+    loadHome: () => {
+        const r = core.user.role;
+        document.getElementById('mod-principal').classList.add('hidden');
+        document.getElementById('mod-teacher').classList.add('hidden');
+        document.getElementById('mod-student').classList.add('hidden');
+        if(r === "Principal") document.getElementById('mod-principal').classList.remove('hidden');
+        else if(r === "Teacher") {
             document.getElementById('mod-teacher').classList.remove('hidden');
-            document.getElementById('t-welcome-msg').innerText = "Welcome, " + this.user.name;
-            this.syncStudentList();
-        } else {
+            const s = document.getElementById('sel-student');
+            s.innerHTML = '<option value="">Select Student</option>' + core.db.students.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+        }
+        else {
             document.getElementById('mod-student').classList.remove('hidden');
-            this.renderStudentUI();
+            document.getElementById('st-home-name').innerText = core.user.name;
+            document.getElementById('st-fee-home').innerText = "₹ " + (core.user.fee || "0");
         }
     },
 
-    // PRINCIPAL
-    addTeacher: function() {
-        const name = document.getElementById('new-t-name').value;
-        const id = document.getElementById('new-t-id').value;
-        const pass = document.getElementById('new-t-pass').value;
-        if(!name || !id) return;
-        this.db.teachers.push({name, id, pass});
-        this.save(); this.renderTeachers();
-        alert("Teacher Account Created!");
+    loadProfile: () => {
+        const u = core.user;
+        document.getElementById('p-name').innerText = u.name;
+        document.getElementById('p-role').innerText = u.role;
+        if(u.role === "Student") {
+            document.getElementById('student-details').classList.remove('hidden');
+            document.getElementById('p-roll').innerText = u.id;
+            document.getElementById('p-sr').innerText = u.sr || "--";
+            document.getElementById('p-father').innerText = u.f || "--";
+            document.getElementById('p-mother').innerText = u.m || "--";
+        } else {
+            document.getElementById('student-details').classList.add('hidden');
+        }
     },
 
-    renderTeachers: function() {
-        document.getElementById('t-list-box').innerHTML = this.db.teachers.map(t => 
-            `<div style="padding:5px; border-bottom:1px solid #eee;">${t.name} (ID: ${t.id} | Pass: ${t.pass})</div>`).join('');
+    addTeacher: () => {
+        core.db.teachers.push({name:document.getElementById('t-name').value, id:document.getElementById('t-id').value, pass:document.getElementById('t-pass').value});
+        core.save(); alert("Teacher Added!");
     },
 
-    // TEACHER
-    addStudent: function() {
-        const name = document.getElementById('ns-name').value;
-        const id = document.getElementById('ns-id').value;
-        const sr = document.getElementById('ns-sr').value;
-        const pass = document.getElementById('ns-pass').value;
-        this.db.students.push({name, id, sr, pass, father:"", mother:"", fcon:"", mcon:"", dob:"", att:"0", fees:"0", hw:""});
-        this.save(); this.syncStudentList();
-        alert("Student Registered!");
+    addStudent: () => {
+        core.db.students.push({name:document.getElementById('s-name').value, id:document.getElementById('s-id').value, sr:document.getElementById('s-sr').value, pass:document.getElementById('s-pass').value, att:"0", fee:"0"});
+        core.save(); alert("Student Added!");
     },
 
-    syncStudentList: function() {
-        const sel = document.getElementById('edit-s-select');
-        sel.innerHTML = '<option value="">Select Student to Edit</option>' + 
-            this.db.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-    },
-
-    loadStudentForEdit: function() {
-        const s = this.db.students.find(x => x.id === document.getElementById('edit-s-select').value);
-        if(!s) return;
-        document.getElementById('edit-fields').classList.remove('hidden');
-        document.getElementById('e-father').value = s.father;
-        document.getElementById('e-mother').value = s.mother;
-        document.getElementById('e-fcontact').value = s.fcon;
-        document.getElementById('e-mcontact').value = s.mcon;
-        document.getElementById('e-dob').value = s.dob;
-        document.getElementById('e-att').value = s.att;
-        document.getElementById('e-fees').value = s.fees;
-        document.getElementById('e-hw').value = s.hw;
-    },
-
-    saveStudentEdit: function() {
-        const s = this.db.students.find(x => x.id === document.getElementById('edit-s-select').value);
-        s.father = document.getElementById('e-father').value;
-        s.mother = document.getElementById('e-mother').value;
-        s.fcon = document.getElementById('e-fcontact').value;
-        s.mcon = document.getElementById('e-mcontact').value;
-        s.dob = document.getElementById('e-dob').value;
+    loadEdit: () => { document.getElementById('edit-area').classList.remove('hidden'); },
+    
+    saveEdit: () => {
+        const s = core.db.students.find(x => x.id === document.getElementById('sel-student').value);
         s.att = document.getElementById('e-att').value;
-        s.fees = document.getElementById('e-fees').value;
-        s.hw = document.getElementById('e-hw').value;
-        this.save(); alert("Student Record Updated!");
-    },
-
-    // STUDENT
-    renderStudentUI: function() {
-        const u = this.user;
-        document.getElementById('st-ui-name').innerText = u.name.toUpperCase();
-        document.getElementById('st-ui-att').innerText = u.att + "%";
-        document.getElementById('st-ui-fees').innerText = "₹ " + u.fees;
-        document.getElementById('st-ui-roll').innerText = u.id;
-        document.getElementById('st-ui-sr').innerText = u.sr;
-        document.getElementById('st-ui-father').innerText = u.father || "--";
-        document.getElementById('st-ui-mother').innerText = u.mother || "--";
-        document.getElementById('st-ui-fcon').innerText = u.fcon || "--";
-        document.getElementById('st-ui-dob').innerText = u.dob || "--";
-        document.getElementById('st-ui-hw').innerText = u.hw || "No homework assigned.";
+        s.fee = document.getElementById('e-fee').value;
+        core.save(); alert("Updated!");
     }
 };
 </script>
