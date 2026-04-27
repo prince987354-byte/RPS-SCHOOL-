@@ -3,252 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPS Jajod - Sikar</title>
+    <title>RPS Jajod - Advanced System</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --brand: #b21f1f; --dark: #1a2a6c; --bg: #f4f7fa; }
+        :root { --dark: #1a2a6c; --red: #b21f1f; --gold: #fdbb2d; --bg: #f8f9fa; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg); padding-bottom: 90px; color: #333; }
+        body { background: var(--bg); padding-bottom: 100px; }
         
-        header { background: linear-gradient(135deg, var(--dark), #121b44); color: white; padding: 30px 20px; border-radius: 0 0 30px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
-        .card { background: white; border-radius: 20px; padding: 20px; margin: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.02); }
+        /* THEME */
+        header { background: var(--dark); color: white; padding: 25px; border-radius: 0 0 25px 25px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .card { background: white; border-radius: 15px; padding: 15px; margin: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        h4 { color: var(--dark); margin-bottom: 10px; border-bottom: 2px solid var(--gold); display: inline-block; }
         
-        input, select, textarea { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: 1px solid #ddd; background: #fff; font-size: 15px; }
-        button { background: var(--brand); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s; }
-        button:active { transform: scale(0.96); }
-
+        /* FORM ELEMENTS */
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; }
+        button { background: var(--red); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 5px; }
         .hidden { display: none !important; }
-        .label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
         
-        /* GRID FOR PROFILE */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .info-box { background: #f9f9f9; padding: 12px; border-radius: 12px; border-bottom: 3px solid var(--dark); }
-
+        /* CLASS CHIPS */
+        .chip { display: inline-block; padding: 5px 10px; background: #e0e0e0; border-radius: 5px; font-size: 10px; margin: 2px; }
+        .log-item { font-size: 11px; padding: 5px; border-bottom: 1px solid #eee; color: #555; }
+        
         /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: white; display: flex; justify-content: space-around; align-items: center; border-radius: 25px 25px 0 0; box-shadow: 0 -10px 25px rgba(0,0,0,0.05); z-index: 1000; }
-        .nav-item { text-align: center; font-size: 11px; color: #b2bec3; cursor: pointer; transition: 0.3s; flex: 1; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 12px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); border-top: 1px solid #eee; }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #aaa; cursor: pointer; }
         .nav-active { color: var(--dark); font-weight: 800; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1 style="font-size: 22px; letter-spacing: 1px;">RPS JAJOD</h1>
-    <p style="font-size: 11px; opacity: 0.8; margin-top: 5px;">SIKAR, RAJASTHAN | ACADEMIC PORTAL</p>
+    <h2 id="display-title">RPS JAJOD</h2>
+    <p id="sub-title" style="font-size: 11px; opacity: 0.8;">Smart Management System</p>
 </header>
 
-<div id="login-page" style="padding: 20px;">
+<div id="login-screen" style="padding: 20px;">
     <div class="card" style="margin-top: 30px;">
-        <h3 style="text-align: center; margin-bottom: 20px;">Staff & Student Login</h3>
-        <select id="user-role">
+        <h3 style="text-align: center;">Login</h3>
+        <select id="role">
             <option value="Principal">Principal</option>
             <option value="Teacher">Teacher</option>
             <option value="Student">Student</option>
         </select>
-        <input type="text" id="user-id" placeholder="Enter ID">
-        <input type="password" id="user-pass" placeholder="Enter Password">
-        <button onclick="app.login()">Sign In</button>
+        <input type="text" id="uid" placeholder="User ID">
+        <input type="password" id="ups" placeholder="Password">
+        <button onclick="sys.login()">Enter Portal</button>
     </div>
 </div>
 
-<div id="main-dashboard" class="hidden">
+<div id="app-screen" class="hidden">
     
-    <div id="screen-home" class="screen">
-        <div id="role-principal-ui" class="hidden">
+    <div id="tab-dash">
+        
+        <div id="view-principal" class="hidden">
             <div class="card">
-                <h4>➕ Register Teacher</h4>
-                <input type="text" id="add-t-name" placeholder="Name">
-                <input type="text" id="add-t-id" placeholder="Assign ID">
-                <input type="text" id="add-t-pass" placeholder="Set Password">
-                <button onclick="app.addTeacher()">Save Teacher Account</button>
+                <h4>Assign Teacher Permission</h4>
+                <input type="text" id="t-name" placeholder="Teacher Name">
+                <input type="text" id="t-id" placeholder="ID">
+                <input type="text" id="t-pass" placeholder="Password">
+                <p class="label">Allowed Classes (e.g. 1,2,3,4,5)</p>
+                <input type="text" id="t-classes" placeholder="1,2,3">
+                <p class="label">Assign Subject (Only this will be editable)</p>
+                <select id="t-subject">
+                    <option value="All">All Subjects</option>
+                    <option value="Hindi">Hindi</option>
+                    <option value="Math">Math</option>
+                    <option value="English">English</option>
+                    <option value="Science">Science</option>
+                </select>
+                <button onclick="sys.addTeacher()">Create & Assign Teacher</button>
+            </div>
+            
+            <div class="card">
+                <h4>Live Teacher Activities</h4>
+                <div id="principal-logs" style="max-height: 200px; overflow-y: auto;"></div>
             </div>
         </div>
 
-        <div id="role-teacher-ui" class="hidden">
-            <div class="card">
-                <h4>🆕 Add Student</h4>
-                <input type="text" id="add-s-name" placeholder="Name">
-                <input type="text" id="add-s-id" placeholder="Roll No/ID">
-                <input type="text" id="add-s-sr" placeholder="SR Number">
-                <input type="text" id="add-s-pass" placeholder="Password">
-                <button onclick="app.addStudent()">Enroll Student</button>
+        <div id="view-teacher" class="hidden">
+            <div class="card" style="background: #eef2ff;">
+                <p>Welcome, <b id="t-disp-name"></b></p>
+                <p id="t-disp-perm" style="font-size: 11px; color: #555;"></p>
             </div>
+
             <div class="card">
-                <h4>⚙️ Bulk Data Editor</h4>
-                <select id="student-picker" onchange="app.fillEditForm()"><option value="">Choose Student</option></select>
-                <div id="edit-form-box" class="hidden">
-                    <input type="text" id="in-father" placeholder="Father Name">
-                    <input type="text" id="in-mother" placeholder="Mother Name">
-                    <input type="text" id="in-att" placeholder="Attendance %">
-                    <input type="text" id="in-fee" placeholder="Pending Fee">
-                    <textarea id="in-hw" placeholder="Write Homework Here..."></textarea>
-                    <button onclick="app.saveData()">Update Record</button>
+                <h4>Enroll Student</h4>
+                <select id="s-class-sel">
+                    <option value="">Choose Class</option>
+                </select>
+                <input type="text" id="s-name" placeholder="Student Name">
+                <input type="text" id="s-id" placeholder="Student ID (Roll No)">
+                <input type="text" id="s-sr" placeholder="SR Number">
+                <input type="text" id="s-pass" placeholder="Password">
+                <button onclick="sys.addStudent()">Add Student to Class</button>
+            </div>
+
+            <div class="card">
+                <h4>Manage Marks & Activities</h4>
+                <select id="s-edit-list" onchange="sys.loadEditForm()"><option value="">Select Student</option></select>
+                <div id="edit-form" class="hidden">
+                    <p id="subject-lock-msg" style="font-size: 11px; color: var(--red); font-weight: 700;"></p>
+                    <input type="text" id="e-att" placeholder="Attendance %">
+                    <input type="text" id="e-fee" placeholder="Pending Fees">
+                    <textarea id="e-work" placeholder="Homework/Activity..."></textarea>
+                    <button onclick="sys.saveData()">Update Student</button>
                 </div>
             </div>
         </div>
 
-        <div id="role-student-ui" class="hidden">
-            <div class="card" style="background: var(--dark); color:white; border:none;">
-                <p class="label" style="color:rgba(255,255,255,0.6)">Current Student</p>
-                <h2 id="st-home-name">---</h2>
+        <div id="view-student" class="hidden">
+            <div class="card" style="background: var(--dark); color: white;">
+                <h2 id="st-name">---</h2>
+                <p id="st-class-info" style="font-size: 12px; opacity:0.8;"></p>
             </div>
-            <div style="display:flex; gap:10px; margin: 0 15px;">
-                <div class="card" style="flex:1; text-align:center; margin:0;"><span class="label">Attendance</span><h3 id="st-home-att">0%</h3></div>
-                <div class="card" style="flex:1; text-align:center; margin:0;"><span class="label">Status</span><h3>Active</h3></div>
+            <div class="card" style="background: #fff1f1;">
+                <span class="label">Account Status</span>
+                <h3>FEES PENDING: <span id="st-fee">0</span></h3>
             </div>
-            <div class="card" style="background:#fff1f1; border:1px solid #ffcccc;">
-                <span class="label" style="color:var(--brand)">Pending Fees</span>
-                <h2 id="st-home-fee" style="color:var(--brand)">₹ 0</h2>
-            </div>
-            <div class="card" style="background:#fff9db; border:none;">
-                <h4 style="color:#856404;">📝 Today's Homework</h4>
-                <p id="st-home-hw" style="margin-top:10px; font-size:14px; line-height:1.5;"></p>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-profile" class="screen hidden" style="padding: 10px;">
-        <div class="card">
-            <h3 style="text-align:center; margin-bottom:20px; color:var(--dark);">User Information</h3>
-            <div class="info-grid">
-                <div class="info-box"><span class="label">Account Name</span><b id="prof-name"></b></div>
-                <div class="info-box"><span class="label">Permission</span><b id="prof-role"></b></div>
-            </div>
-            <div id="student-only-fields" class="hidden">
+            <div class="card">
                 <div class="info-grid">
-                    <div class="info-box"><span class="label">SR Number</span><b id="prof-sr"></b></div>
-                    <div class="info-box"><span class="label">Roll Number</span><b id="prof-roll"></b></div>
+                    <div class="info-box"><span class="label">SR NO</span><b id="st-sr"></b></div>
+                    <div class="info-box"><span class="label">ATTENDANCE</span><b id="st-att"></b></div>
                 </div>
-                <div class="info-grid">
-                    <div class="info-box"><span class="label">Father Name</span><b id="prof-father"></b></div>
-                    <div class="info-box"><span class="label">Mother Name</span><b id="prof-mother"></b></div>
+                <div style="margin-top:15px; padding:10px; background:#fff9db; border-radius:10px;">
+                    <span class="label">TODAY'S WORK</span>
+                    <p id="st-hw" style="font-size: 14px; margin-top:5px;"></p>
                 </div>
             </div>
-            <button onclick="location.reload()" style="background:#555; margin-top:30px;">Logout System</button>
         </div>
-    </div>
 
+    </div>
 </div>
 
-<div id="nav-bar" class="bottom-nav hidden">
-    <div class="nav-item nav-active" id="nav-home-btn" onclick="app.switchTab('home')">🏠<br>Dashboard</div>
-    <div class="nav-item" id="nav-profile-btn" onclick="app.switchTab('profile')">👤<br>My Profile</div>
-    <div class="nav-item" onclick="location.reload()">🔄<br>Reload</div>
+<div id="nav" class="nav hidden">
+    <div class="nav-item nav-active" onclick="location.reload()">🏠<br>Dashboard</div>
+    <div class="nav-item" onclick="location.reload()">👤<br>Logout</div>
 </div>
 
 <script>
-const app = {
+const sys = {
     db: {
-        teachers: JSON.parse(localStorage.getItem('rps_sikar_t')) || [],
-        students: JSON.parse(localStorage.getItem('rps_sikar_s')) || []
+        teachers: JSON.parse(localStorage.getItem('rps_v10_t')) || [],
+        students: JSON.parse(localStorage.getItem('rps_v10_s')) || [],
+        logs: JSON.parse(localStorage.getItem('rps_v10_l')) || []
     },
     user: null,
 
     save: () => {
-        localStorage.setItem('rps_sikar_t', JSON.stringify(app.db.teachers));
-        localStorage.setItem('rps_sikar_s', JSON.stringify(app.db.students));
+        localStorage.setItem('rps_v10_t', JSON.stringify(sys.db.teachers));
+        localStorage.setItem('rps_v10_s', JSON.stringify(sys.db.students));
+        localStorage.setItem('rps_v10_l', JSON.stringify(sys.db.logs));
+    },
+
+    addLog: (msg) => {
+        const time = new Date().toLocaleTimeString();
+        sys.db.logs.unshift(`${time}: ${msg}`);
+        sys.save();
     },
 
     login: () => {
-        const role = document.getElementById('user-role').value;
-        const id = document.getElementById('user-id').value.trim();
-        const pass = document.getElementById('user-pass').value.trim();
+        const r = document.getElementById('role').value;
+        const id = document.getElementById('uid').value.trim();
+        const ps = document.getElementById('ups').value.trim();
 
-        if(role === "Principal" && id === "Azizkhan" && pass === "khanaziz") {
-            app.user = { role: "Principal", name: "Aziz Khan" };
-        } else if(role === "Teacher") {
-            app.user = app.db.teachers.find(t => t.id === id && t.pass === pass);
-        } else if(role === "Student") {
-            app.user = app.db.students.find(s => s.id === id && s.pass === pass);
-        }
+        if(r === "Principal" && id === "Azizkhan" && ps === "khanaziz") sys.user = {role:"Principal", name:"Principal"};
+        else if(r === "Teacher") sys.user = sys.db.teachers.find(t => t.id === id && t.pass === ps);
+        else if(r === "Student") sys.user = sys.db.students.find(s => s.id === id && s.pass === ps);
 
-        if(app.user) {
-            app.user.role = app.user.role || role;
-            document.getElementById('login-page').classList.add('hidden');
-            document.getElementById('main-dashboard').classList.remove('hidden');
-            document.getElementById('nav-bar').classList.remove('hidden');
-            app.switchTab('home');
-        } else alert("Invalid ID or Password!");
+        if(sys.user) {
+            sys.user.role = sys.user.role || r;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            document.getElementById('nav').classList.remove('hidden');
+            document.getElementById('display-title').innerText = sys.user.name.toUpperCase();
+            sys.loadRoleUI();
+        } else alert("Access Denied! Check ID/Pass");
     },
 
-    switchTab: (tab) => {
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-profile').classList.add('hidden');
-        document.getElementById('nav-home-btn').classList.remove('nav-active');
-        document.getElementById('nav-profile-btn').classList.remove('nav-active');
-
-        if(tab === 'home') {
-            document.getElementById('screen-home').classList.remove('hidden');
-            document.getElementById('nav-home-btn').classList.add('nav-active');
-            app.loadHome();
-        } else {
-            document.getElementById('screen-profile').classList.remove('hidden');
-            document.getElementById('nav-profile-btn').classList.add('nav-active');
-            app.loadProfile();
-        }
-    },
-
-    loadHome: () => {
-        const r = app.user.role;
-        document.getElementById('role-principal-ui').classList.add('hidden');
-        document.getElementById('role-teacher-ui').classList.add('hidden');
-        document.getElementById('role-student-ui').classList.add('hidden');
-
-        if(r === "Principal") document.getElementById('role-principal-ui').classList.remove('hidden');
+    loadRoleUI: () => {
+        const r = sys.user.role;
+        ['view-principal', 'view-teacher', 'view-student'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        
+        if(r === "Principal") {
+            document.getElementById('view-principal').classList.remove('hidden');
+            document.getElementById('principal-logs').innerHTML = sys.db.logs.map(l => `<div class="log-item">${l}</div>`).join('');
+        } 
         else if(r === "Teacher") {
-            document.getElementById('role-teacher-ui').classList.remove('hidden');
-            app.syncDropdown();
-        } else {
-            document.getElementById('role-student-ui').classList.remove('hidden');
-            document.getElementById('st-home-name').innerText = app.user.name;
-            document.getElementById('st-home-att').innerText = (app.user.att || "0") + "%";
-            document.getElementById('st-home-fee').innerText = "₹ " + (app.user.fee || "0");
-            document.getElementById('st-home-hw').innerText = app.user.hw || "No assignments found.";
+            document.getElementById('view-teacher').classList.remove('hidden');
+            document.getElementById('t-disp-name').innerText = sys.user.name;
+            document.getElementById('t-disp-perm').innerText = `Permission: Classes [${sys.user.classes}] | Subject: ${sys.user.subject}`;
+            
+            // Sync Classes for Teacher
+            const sClass = document.getElementById('s-class-sel');
+            sClass.innerHTML = '<option value="">Choose Class</option>' + 
+                sys.user.classes.split(',').map(c => `<option value="${c.trim()}">Class ${c.trim()}</option>`).join('');
+            sys.syncStudentList();
+        } 
+        else {
+            document.getElementById('view-student').classList.remove('hidden');
+            document.getElementById('st-name').innerText = sys.user.name;
+            document.getElementById('st-class-info').innerText = `Class: ${sys.user.class} | SR: ${sys.user.sr}`;
+            document.getElementById('st-fee').innerText = "₹ " + (sys.user.fee || "0");
+            document.getElementById('st-sr').innerText = sys.user.sr || "--";
+            document.getElementById('st-att').innerText = (sys.user.att || "0") + "%";
+            document.getElementById('st-hw').innerText = sys.user.hw || "No pending homework.";
         }
     },
 
-    loadProfile: () => {
-        document.getElementById('prof-name').innerText = app.user.name;
-        document.getElementById('prof-role').innerText = app.user.role;
-        if(app.user.role === "Student") {
-            document.getElementById('student-only-fields').classList.remove('hidden');
-            document.getElementById('prof-sr').innerText = app.user.sr || "--";
-            document.getElementById('prof-roll').innerText = app.user.id || "--";
-            document.getElementById('prof-father').innerText = app.user.father || "--";
-            document.getElementById('prof-mother').innerText = app.user.mother || "--";
-        } else document.getElementById('student-only-fields').classList.add('hidden');
+    // PRINCIPAL ACTIONS
+    addTeacher: () => {
+        const n = document.getElementById('t-name').value;
+        const i = document.getElementById('t-id').value;
+        const p = document.getElementById('t-pass').value;
+        const cls = document.getElementById('t-classes').value;
+        const sub = document.getElementById('t-subject').value;
+        
+        if(n && i && cls) {
+            sys.db.teachers.push({name:n, id:i, pass:p, classes:cls, subject:sub});
+            sys.addLog(`Principal added Teacher ${n} for Classes ${cls}`);
+            sys.save(); alert("Teacher Profile Created!");
+        }
     },
 
-    // ACTIONS
-    addTeacher: () => {
-        app.db.teachers.push({name: document.getElementById('add-t-name').value, id: document.getElementById('add-t-id').value, pass: document.getElementById('add-t-pass').value});
-        app.save(); alert("Success!");
-    },
+    // TEACHER ACTIONS
     addStudent: () => {
-        app.db.students.push({name: document.getElementById('add-s-name').value, id: document.getElementById('add-s-id').value, sr: document.getElementById('add-s-sr').value, pass: document.getElementById('add-s-pass').value, father:"", mother:"", att:"0", fee:"0", hw:""});
-        app.save(); app.syncDropdown(); alert("Success!");
+        const n = document.getElementById('s-name').value;
+        const i = document.getElementById('s-id').value;
+        const sr = document.getElementById('s-sr').value;
+        const p = document.getElementById('s-pass').value;
+        const cls = document.getElementById('s-class-sel').value;
+
+        if(n && cls) {
+            sys.db.students.push({name:n, id:i, pass:p, sr:sr, class:cls, att:"0", fee:"0", hw:""});
+            sys.addLog(`Teacher ${sys.user.name} enrolled ${n} in Class ${cls}`);
+            sys.save(); sys.syncStudentList();
+            alert("Student Registered!");
+        }
     },
-    syncDropdown: () => {
-        document.getElementById('student-picker').innerHTML = '<option value="">Choose Student</option>' + app.db.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+    syncStudentList: () => {
+        const allowed = sys.user.classes.split(',').map(x => x.trim());
+        const filtered = sys.db.students.filter(s => allowed.includes(s.class));
+        document.getElementById('s-edit-list').innerHTML = '<option value="">Select Student</option>' + 
+            filtered.map(s => `<option value="${s.id}">${s.name} (Class ${s.class})</option>`).join('');
     },
-    fillEditForm: () => {
-        const s = app.db.students.find(x => x.id === document.getElementById('student-picker').value);
+
+    loadEditForm: () => {
+        const s = sys.db.students.find(x => x.id === document.getElementById('s-edit-list').value);
         if(!s) return;
-        document.getElementById('edit-form-box').classList.remove('hidden');
-        document.getElementById('in-father').value = s.father;
-        document.getElementById('in-mother').value = s.mother;
-        document.getElementById('in-att').value = s.att;
-        document.getElementById('in-fee').value = s.fee;
-        document.getElementById('in-hw').value = s.hw;
+        document.getElementById('edit-form').classList.remove('hidden');
+        document.getElementById('subject-lock-msg').innerText = `Note: You can only edit ${sys.user.subject} activities.`;
+        document.getElementById('e-att').value = s.att;
+        document.getElementById('e-fee').value = s.fee;
+        document.getElementById('e-work').value = s.hw;
     },
+
     saveData: () => {
-        const s = app.db.students.find(x => x.id === document.getElementById('student-picker').value);
-        s.father = document.getElementById('in-father').value;
-        s.mother = document.getElementById('in-mother').value;
-        s.att = document.getElementById('in-att').value;
-        s.fee = document.getElementById('in-fee').value;
-        s.hw = document.getElementById('in-hw').value;
-        app.save(); alert("Data Updated!");
+        const s = sys.db.students.find(x => x.id === document.getElementById('s-edit-list').value);
+        s.att = document.getElementById('e-att').value;
+        s.fee = document.getElementById('e-fee').value;
+        s.hw = `[${sys.user.subject}] ` + document.getElementById('e-work').value;
+        sys.addLog(`Teacher ${sys.user.name} updated Data for ${s.name}`);
+        sys.save(); alert("Record Locked & Saved!");
     }
 };
 </script>
