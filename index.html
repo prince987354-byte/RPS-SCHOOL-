@@ -3,124 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School App Pro - Fixed</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>School App Pro - Complete Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg: #0f172a;
-        }
+        :root { --primary: #00f2fe; --secondary: #4facfe; --accent: #f53f5b; --bg: #0f172a; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
         
-        body {
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        /* BACKGROUND ANIMATION */
+        .bg-animate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(45deg, #0f172a, #1e293b); }
+        .circle { position: absolute; border-radius: 50%; background: rgba(0, 242, 254, 0.1); filter: blur(50px); animation: move 20s infinite alternate; }
+        @keyframes move { from { transform: translate(0,0); } to { transform: translate(100px, 100px); } }
 
-        /* PREMIUM GLASS UI */
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
+        /* GLASS UI */
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px; }
+        input, select, button, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: none; outline: none; transition: 0.3s; }
+        input, select, textarea { background: rgba(255,255,255,0.1); color: white; }
+        button { background: linear-gradient(135deg, var(--secondary), var(--primary)); color: #0f172a; font-weight: 700; cursor: pointer; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,242,254,0.4); }
+        .btn-danger { background: var(--accent); color: white; }
 
-        /* LOGIN FORM */
-        #login-box {
-            width: 90%;
-            max-width: 400px;
-            margin: auto;
-            text-align: center;
-        }
+        /* LAYOUT */
+        #login-page { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        #main-app { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.5s ease; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: none;
-            outline: none;
-            font-size: 15px;
-        }
+        .nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .nav button { min-width: 120px; background: rgba(255,255,255,0.1); color: white; }
+        .nav button.active { background: var(--primary); color: #000; }
 
-        input, select { background: rgba(255,255,255,0.1); color: white; }
-        option { background: #1e293b; color: white; }
-
-        button {
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            color: #0f172a;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover { transform: scale(1.02); opacity: 0.9; }
-
-        /* DASHBOARD */
-        #app { display: none; width: 100%; max-width: 900px; margin: 20px auto; padding: 15px; }
-        .hidden { display: none !important; }
-        .nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
-        .card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-
-        /* TOAST */
-        #toast {
-            position: fixed; top: 20px; right: 20px; 
-            padding: 15px 25px; border-radius: 10px; 
-            background: var(--primary); color: #000;
-            font-weight: 600; display: none; z-index: 1000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
+        .card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); }
+        #toast { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; border-radius: 10px; background: var(--primary); color: #000; font-weight: 600; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div id="toast"></div>
-
-<div id="login-box" class="glass">
-    <h1 style="margin-bottom: 20px;">School Pro</h1>
-    <select id="role">
-        <option value="Principal">Principal</option>
-        <option value="Teacher">Teacher</option>
-        <option value="Student">Student</option>
-    </select>
-    <input type="text" id="userid" placeholder="User ID">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="handleLogin()">Login to Dashboard</button>
+<div class="bg-animate">
+    <div class="circle" style="width: 300px; height: 300px; top: -50px; left: -50px;"></div>
+    <div class="circle" style="width: 200px; height: 200px; bottom: 50px; right: 50px; background: rgba(79, 172, 254, 0.1);"></div>
 </div>
 
-<div id="app">
+<div id="toast"></div>
+
+<div id="login-page">
+    <div class="glass" style="width: 90%; max-width: 400px; text-align: center;">
+        <h2 style="margin-bottom: 20px; letter-spacing: 2px;">SCHOOL PRO</h2>
+        <select id="role">
+            <option value="Principal">Principal</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Student">Student</option>
+        </select>
+        <input type="text" id="userid" placeholder="ID (e.g. Azizkhan)">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="auth()">Access Dashboard</button>
+    </div>
+</div>
+
+<div id="main-app">
     <div class="glass" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <h2 id="welcome">Dashboard</h2>
-        <button onclick="location.reload()" style="width: auto; padding: 8px 15px;">Logout</button>
+        <div>
+            <h3 id="user-display">Welcome</h3>
+            <p id="role-display" style="font-size: 12px; color: var(--primary);"></p>
+        </div>
+        <button onclick="location.reload()" style="width: auto; padding: 8px 15px;" class="btn-danger">Logout</button>
     </div>
 
-    <div class="nav">
-        <button onclick="showTab('teachers-tab')" id="nav-t">Teachers</button>
-        <button onclick="showTab('students-tab')" id="nav-s">Students</button>
-        <button onclick="showTab('work-tab')">Management</button>
-    </div>
+    <div class="nav" id="main-nav">
+        </div>
 
-    <div id="teachers-tab" class="tab-content">
+    <div id="tab-manage-teachers" class="tab-content">
         <div class="glass">
             <h3>Add Teacher (Max 12)</h3>
-            <input type="text" id="t-name" placeholder="Teacher Name">
-            <input type="text" id="t-id" placeholder="Teacher Login ID">
-            <input type="text" id="t-pass" placeholder="Teacher Password">
+            <input type="text" id="t-name" placeholder="Full Name">
+            <input type="text" id="t-id" placeholder="Login ID">
+            <input type="text" id="t-pass" placeholder="Password">
+            <input type="text" id="t-salary" placeholder="Salary Amount (e.g. $2500)">
             <button onclick="addTeacher()">Save Teacher</button>
-            <div id="teacher-list" style="margin-top: 20px;"></div>
+            <hr style="margin: 20px 0; opacity: 0.1;">
+            <div id="teacher-list"></div>
         </div>
     </div>
 
-    <div id="students-tab" class="tab-content hidden">
+    <div id="tab-manage-students" class="tab-content">
         <div class="glass">
-            <h3>Student Database</h3>
-            <div id="student-add-form">
+            <h3>Student Directory</h3>
+            <div id="student-form-container">
                 <input type="text" id="s-name" placeholder="Student Name">
                 <input type="text" id="s-id" placeholder="Student ID">
                 <input type="text" id="s-pass" placeholder="Password">
@@ -131,167 +100,207 @@
         </div>
     </div>
 
-    <div id="work-tab" class="tab-content hidden">
+    <div id="tab-my-details" class="tab-content">
         <div class="glass">
-            <h3>Admin Notices & Work</h3>
-            <input type="text" id="n-title" placeholder="Title">
-            <textarea id="n-body" placeholder="Details..." style="width:100%; background:rgba(255,255,255,0.1); color:white; border-radius:10px; padding:10px; margin:10px 0; border:none;"></textarea>
-            <button onclick="addNotice()">Post Notice</button>
+            <h3>My Employment Info</h3>
+            <div id="salary-view" class="card"></div>
+            <div class="card">
+                <h4>Attendance Summary</h4>
+                <p>Status: <span style="color: var(--primary);">Active</span></p>
+                <p>Days Present: 24/26</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-notices" class="tab-content">
+        <div class="glass">
+            <h3>School Notices</h3>
+            <div id="notice-form-container">
+                <input id="n-title" placeholder="Title">
+                <textarea id="n-body" placeholder="Notice Details..."></textarea>
+                <button onclick="addNotice()">Post Notice</button>
+            </div>
             <div id="notice-list" style="margin-top: 20px;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // DATA CONFIG
-    const PRINCIPAL_LOGINS = [
-        {id: "Azizkhan", pass: "khanaziz"},
-        {id: "RPS", pass: "JAJ12"}
+    // CORE DATA
+    const PRINCIPALS = [
+        {id: "Azizkhan", pass: "khanaziz", name: "Aziz Khan"},
+        {id: "RPS", pass: "JAJ12", name: "RPS Admin"}
     ];
 
-    let teachers = JSON.parse(localStorage.getItem('sch_teachers')) || [];
-    let students = JSON.parse(localStorage.getItem('sch_students')) || [];
-    let notices = JSON.parse(localStorage.getItem('sch_notices')) || [];
+    let db = {
+        teachers: JSON.parse(localStorage.getItem('pro_teachers')) || [],
+        students: JSON.parse(localStorage.getItem('pro_students')) || [],
+        notices: JSON.parse(localStorage.getItem('pro_notices')) || []
+    };
 
-    // TOAST SYSTEM
-    function showToast(msg) {
+    let currentUser = null;
+
+    function toast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.style.display = 'block';
         setTimeout(() => t.style.display = 'none', 3000);
     }
 
-    // LOGIN LOGIC
-    function handleLogin() {
+    // AUTHENTICATION
+    function auth() {
         const role = document.getElementById('role').value;
-        const user = document.getElementById('userid').value.trim();
+        const id = document.getElementById('userid').value.trim();
         const pass = document.getElementById('password').value.trim();
 
         if (role === "Principal") {
-            const auth = PRINCIPAL_LOGINS.find(p => p.id === user && p.pass === pass);
-            if (auth) startApp("Principal", user);
-            else showToast("Principal ID/Pass Incorrect");
+            const p = PRINCIPALS.find(x => x.id === id && x.pass === pass);
+            if(p) startApp(role, p); else toast("Invalid Principal Login");
         } 
         else if (role === "Teacher") {
-            const auth = teachers.find(t => t.id === user && t.pass === pass);
-            if (auth) startApp("Teacher", auth.name);
-            else showToast("Teacher ID/Pass Incorrect");
+            const t = db.teachers.find(x => x.id === id && x.pass === pass);
+            if(t) startApp(role, t); else toast("Teacher not found or wrong password");
         }
         else if (role === "Student") {
-            const auth = students.find(s => s.id === user && s.pass === pass);
-            if (auth) startApp("Student", auth.name);
-            else showToast("Student ID/Pass Incorrect");
+            const s = db.students.find(x => x.id === id && x.pass === pass);
+            if(s) startApp(role, s); else toast("Student not found");
         }
     }
 
-    function startApp(role, name) {
-        document.getElementById('login-box').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
-        document.getElementById('welcome').innerText = role + ": " + name;
+    function startApp(role, user) {
+        currentUser = { ...user, role };
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('user-display').innerText = user.name;
+        document.getElementById('role-display').innerText = role + " Account";
 
-        // Permissions
-        if (role === "Teacher") {
-            document.getElementById('nav-t').classList.add('hidden');
-            showTab('students-tab');
-        } else if (role === "Student") {
-            document.getElementById('nav-t').classList.add('hidden');
-            document.getElementById('student-add-form').classList.add('hidden');
-            showTab('work-tab');
-        } else {
-            showTab('teachers-tab');
-        }
+        setupNav(role);
+        renderData();
+    }
+
+    function setupNav(role) {
+        const nav = document.getElementById('main-nav');
+        nav.innerHTML = '';
         
-        renderAll();
+        if (role === "Principal") {
+            nav.innerHTML += `<button onclick="switchTab('tab-manage-teachers', this)" class="active">Teachers</button>`;
+            nav.innerHTML += `<button onclick="switchTab('tab-manage-students', this)">Students</button>`;
+            nav.innerHTML += `<button onclick="switchTab('tab-notices', this)">Notices</button>`;
+            switchTab('tab-manage-teachers');
+        } 
+        else if (role === "Teacher") {
+            nav.innerHTML += `<button onclick="switchTab('tab-manage-students', this)" class="active">Students</button>`;
+            nav.innerHTML += `<button onclick="switchTab('tab-my-details', this)">My Salary</button>`;
+            nav.innerHTML += `<button onclick="switchTab('tab-notices', this)">Notices</button>`;
+            document.getElementById('student-form-container').classList.remove('hidden');
+            switchTab('tab-manage-students');
+        }
+        else {
+            nav.innerHTML += `<button onclick="switchTab('tab-notices', this)" class="active">School Notices</button>`;
+            document.getElementById('student-form-container').classList.add('hidden');
+            document.getElementById('notice-form-container').classList.add('hidden');
+            switchTab('tab-notices');
+        }
     }
 
-    function showTab(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-tab');
+        if(btn) {
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
     }
 
     // ACTIONS
     function addTeacher() {
-        if (teachers.length >= 12) return showToast("Limit: 12 Teachers");
+        if(db.teachers.length >= 12) return toast("Limit Reached (12 Teachers)");
         const name = document.getElementById('t-name').value;
         const id = document.getElementById('t-id').value;
         const pass = document.getElementById('t-pass').value;
+        const salary = document.getElementById('t-salary').value;
 
-        if(!name || !id || !pass) return showToast("Fill all fields");
-        
-        teachers.push({name, id, pass});
-        localStorage.setItem('sch_teachers', JSON.stringify(teachers));
-        renderAll();
-        showToast("Teacher Added!");
+        if(!name || !id || !pass) return toast("Missing Info");
+
+        db.teachers.push({name, id, pass, salary});
+        save();
+        renderData();
+        toast("Teacher Account Created!");
     }
 
     function addStudent() {
         const name = document.getElementById('s-name').value;
         const id = document.getElementById('s-id').value;
         const pass = document.getElementById('s-pass').value;
-        const file = document.getElementById('s-photo').files[0];
+        const photo = document.getElementById('s-photo').files[0];
 
-        if(!name || !id || !pass) return showToast("Fill all fields");
+        if(!name || !id) return toast("Name & ID required");
 
         const reader = new FileReader();
-        reader.onload = function(e) {
-            students.push({name, id, pass, photo: e.target.result});
-            localStorage.setItem('sch_students', JSON.stringify(students));
-            renderAll();
-            showToast("Student Added!");
-        }
-        if(file) reader.readAsDataURL(file);
-        else {
-            students.push({name, id, pass, photo: ''});
-            localStorage.setItem('sch_students', JSON.stringify(students));
-            renderAll();
+        reader.onload = (e) => {
+            db.students.push({name, id, pass, photo: e.target.result});
+            save(); renderData(); toast("Student Added");
+        };
+        if(photo) reader.readAsDataURL(photo); else {
+            db.students.push({name, id, pass, photo: ''});
+            save(); renderData();
         }
     }
 
     function addNotice() {
         const title = document.getElementById('n-title').value;
         const body = document.getElementById('n-body').value;
-        if(!title) return;
-        notices.push({title, body});
-        localStorage.setItem('sch_notices', JSON.stringify(notices));
-        renderAll();
-        showToast("Notice Posted");
+        db.notices.push({title, body, date: new Date().toLocaleDateString()});
+        save(); renderData(); toast("Notice Posted");
     }
 
-    // RENDERERS
-    function renderAll() {
-        const tList = document.getElementById('teacher-list');
-        tList.innerHTML = teachers.map((t, i) => `
+    function save() {
+        localStorage.setItem('pro_teachers', JSON.stringify(db.teachers));
+        localStorage.setItem('pro_students', JSON.stringify(db.students));
+        localStorage.setItem('pro_notices', JSON.stringify(db.notices));
+    }
+
+    function renderData() {
+        // Teacher List (For Principal)
+        document.getElementById('teacher-list').innerHTML = db.teachers.map((t, i) => `
             <div class="card">
-                <b>${t.name}</b> (ID: ${t.id})
-                <button onclick="deleteItem('teachers', ${i})" style="width:auto; float:right; background:red; color:white; padding:2px 10px;">X</button>
+                <b>${t.name}</b> (Login ID: ${t.id})<br>
+                Salary: ${t.salary || 'Not Set'}
+                <button class="btn-danger" style="width:auto; padding:2px 10px; float:right;" onclick="deleteT(${i})">Delete</button>
             </div>
         `).join('');
 
-        const sList = document.getElementById('student-list');
-        sList.innerHTML = students.map((s, i) => `
-            <div class="card" style="display:flex; align-items:center; gap:15px;">
-                <img src="${s.photo || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+        // Student List
+        document.getElementById('student-list').innerHTML = db.students.map(s => `
+            <div class="card" style="display:flex; align-items:center; gap:10px;">
+                <img src="${s.photo || 'https://via.placeholder.com/40'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                 <div><b>${s.name}</b><br><small>ID: ${s.id}</small></div>
-                <button onclick="deleteItem('students', ${i})" style="margin-left:auto; width:auto; background:red; color:white;">X</button>
             </div>
         `).join('');
 
-        const nList = document.getElementById('notice-list');
-        nList.innerHTML = notices.map(n => `
+        // Notice List
+        document.getElementById('notice-list').innerHTML = db.notices.reverse().map(n => `
             <div class="card">
                 <h4 style="color:var(--primary)">${n.title}</h4>
-                <p>${n.body}</p>
+                <p style="font-size: 14px;">${n.body}</p>
+                <small style="opacity:0.5">${n.date}</small>
             </div>
         `).join('');
+
+        // Salary View (For Teacher)
+        if(currentUser && currentUser.role === 'Teacher') {
+            document.getElementById('salary-view').innerHTML = `
+                <h4>My Salary Information</h4>
+                <p style="font-size: 24px; color: var(--primary); font-weight:700;">${currentUser.salary || '$0.00'}</p>
+                <p style="font-size:12px;">Status: Paid (Current Month)</p>
+            `;
+        }
     }
 
-    function deleteItem(type, index) {
-        if(type === 'teachers') teachers.splice(index, 1);
-        else students.splice(index, 1);
-        localStorage.setItem('sch_' + type, JSON.stringify(type === 'teachers' ? teachers : students));
-        renderAll();
+    function deleteT(i) {
+        db.teachers.splice(i, 1); save(); renderData();
     }
+
 </script>
-
 </body>
 </html>
