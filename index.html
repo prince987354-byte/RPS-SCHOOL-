@@ -3,84 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>School Management Pro</title>
+<title>School App Pro</title>
 
 <style>
-/* ===== GLOBAL ===== */
 body {
   margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family:sans-serif;
+  background: linear-gradient(135deg,#141e30,#243b55);
   color:white;
-  overflow-x:hidden;
 }
 
-/* Glass UI */
+/* Glass */
 .glass {
   background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(15px);
+  backdrop-filter: blur(12px);
   border-radius: 15px;
-  padding:20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  padding:15px;
+  margin:10px;
 }
 
-/* Container */
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding:20px;
-}
-
-/* Inputs */
-input, button {
-  padding:10px;
+/* Layout */
+.container {padding:15px;}
+input,button,select {
+  width:100%;
   margin:5px 0;
-  border:none;
+  padding:10px;
   border-radius:8px;
+  border:none;
 }
 
-button {
-  background:#00c6ff;
-  color:white;
-  cursor:pointer;
-}
+button {background:#00c6ff;color:white;}
 
-/* Cards */
+.hidden {display:none;}
+
 .card {
-  margin-top:15px;
-  animation: fadeInUp 0.6s ease;
+  animation:fade 0.5s ease;
+}
+@keyframes fade {
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1;}
 }
 
-/* Animation */
-@keyframes fadeInUp {
-  from {opacity:0; transform:translateY(20px);}
-  to {opacity:1; transform:translateY(0);}
-}
-
-/* Toast */
 #toast {
   position:fixed;
   bottom:20px;
   right:20px;
   background:#00c6ff;
-  padding:15px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:8px;
   display:none;
 }
-
-/* Progress Bar */
-.progress {
-  background:#333;
-  border-radius:10px;
-  overflow:hidden;
-}
-.progress-bar {
-  height:10px;
-  background:#00ff99;
-}
-
-/* Hidden */
-.hidden {display:none;}
 </style>
 </head>
 
@@ -89,37 +61,60 @@ button {
 <div class="container">
 
 <!-- LOGIN -->
-<div id="loginBox" class="glass">
-  <h2>Login</h2>
-  <input id="id" placeholder="Enter ID"><br>
-  <input id="pass" placeholder="Enter Password"><br>
-  <button onclick="login()">Login</button>
+<div id="login">
+  <div class="glass">
+    <h2>Login</h2>
+    <select id="role">
+      <option>Principal</option>
+      <option>Teacher</option>
+      <option>Student</option>
+    </select>
+    <input id="id" placeholder="ID">
+    <input id="pass" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="hidden">
 
-  <h2 id="roleTitle"></h2>
+  <h2 id="title"></h2>
 
+  <!-- NAV -->
   <div class="glass">
-    <h3>Add Student</h3>
-    <input id="name" placeholder="Student Name">
-    <input id="marks" placeholder="Marks %">
-    <input type="file" id="photo">
-    <button onclick="addStudent()">Add</button>
+    <button onclick="show('students')">Students</button>
+    <button onclick="show('attendance')">Attendance</button>
+    <button onclick="show('homework')">Homework</button>
+    <button onclick="logout()">Logout</button>
   </div>
 
-  <div class="glass card">
-    <h3>Students</h3>
+  <!-- STUDENTS -->
+  <div id="students" class="glass hidden">
+    <h3>Add Student</h3>
+    <input id="sname" placeholder="Name">
+    <input id="sid" placeholder="Student ID">
+    <input id="spass" placeholder="Password">
+    <input type="file" id="sphoto">
+    <button onclick="addStudent()">Add</button>
+
     <div id="studentList"></div>
   </div>
 
-  <!-- Teacher Management (Principal only) -->
-  <div id="teacherPanel" class="glass hidden">
-    <h3>Add Teacher (Max 12)</h3>
-    <input id="tid" placeholder="Teacher ID">
-    <input id="tpass" placeholder="Password">
-    <button onclick="addTeacher()">Add Teacher</button>
+  <!-- ATTENDANCE -->
+  <div id="attendance" class="glass hidden">
+    <h3>Mark Attendance</h3>
+    <div id="attendanceList"></div>
+    <button onclick="saveAttendance()">Save</button>
+  </div>
+
+  <!-- HOMEWORK -->
+  <div id="homework" class="glass hidden">
+    <h3>Add Homework</h3>
+    <input id="htitle" placeholder="Title">
+    <input id="hdesc" placeholder="Description">
+    <button onclick="addHomework()">Add</button>
+
+    <div id="homeworkList"></div>
   </div>
 
 </div>
@@ -132,115 +127,148 @@ button {
 
 /* ===== DATA ===== */
 let students = JSON.parse(localStorage.getItem("students")) || [];
+let homework = JSON.parse(localStorage.getItem("homework")) || [];
+let attendance = [];
+
+const PRINCIPAL = {id:"Azizkhan", pass:"khanaziz"};
 let teachers = JSON.parse(localStorage.getItem("teachers")) || [];
 
-const ADMIN = {id:"RPS", pass:"JAJ12"};
-const PRINCIPAL = {id:"Azizkhan", pass:"khanaziz"};
+let currentUser = null;
 
 /* ===== TOAST ===== */
 function toast(msg){
   let t = document.getElementById("toast");
   t.innerText = msg;
-  t.style.display = "block";
+  t.style.display="block";
   setTimeout(()=>t.style.display="none",2000);
 }
 
 /* ===== LOGIN ===== */
 function login(){
+  let role = document.getElementById("role").value;
   let id = document.getElementById("id").value;
   let pass = document.getElementById("pass").value;
 
-  if(id===ADMIN.id && pass===ADMIN.pass){
-    start("Admin");
-  }
-  else if(id===PRINCIPAL.id && pass===PRINCIPAL.pass){
+  if(role==="Principal" && id===PRINCIPAL.id && pass===PRINCIPAL.pass){
     start("Principal");
-    document.getElementById("teacherPanel").classList.remove("hidden");
   }
-  else{
+  else if(role==="Teacher"){
     let t = teachers.find(x=>x.id===id && x.pass===pass);
-    if(t){
-      start("Teacher");
-    } else {
-      toast("Invalid Login");
-    }
+    if(t) start("Teacher");
+    else toast("Wrong Teacher Login");
+  }
+  else if(role==="Student"){
+    let s = students.find(x=>x.id===id && x.pass===pass);
+    if(s){
+      currentUser = s;
+      start("Student");
+    } else toast("Wrong Student Login");
   }
 }
 
+/* ===== START ===== */
 function start(role){
-  document.getElementById("loginBox").style.display="none";
+  document.getElementById("login").style.display="none";
   document.getElementById("dashboard").classList.remove("hidden");
-  document.getElementById("roleTitle").innerText = role + " Dashboard";
+  document.getElementById("title").innerText = role+" Dashboard";
+  show('students');
   loadStudents();
+  loadHomework();
 }
 
-/* ===== ADD STUDENT ===== */
+/* ===== NAV ===== */
+function show(tab){
+  document.querySelectorAll("#dashboard > div").forEach(d=>d.classList.add("hidden"));
+  document.getElementById(tab).classList.remove("hidden");
+
+  if(tab==="attendance") loadAttendance();
+}
+
+/* ===== STUDENT ===== */
 function addStudent(){
-  let name = document.getElementById("name").value;
-  let marks = document.getElementById("marks").value;
-  let file = document.getElementById("photo").files[0];
+  let name = sname.value;
+  let id = sid.value;
+  let pass = spass.value;
+  let file = sphoto.files[0];
 
   let reader = new FileReader();
   reader.onload = function(){
-    students.push({
-      name, marks,
-      photo: reader.result
-    });
-    localStorage.setItem("students", JSON.stringify(students));
+    students.push({name,id,pass,photo:reader.result});
+    localStorage.setItem("students",JSON.stringify(students));
     loadStudents();
     toast("Student Added");
   };
-
-  if(file){
-    reader.readAsDataURL(file);
-  } else {
-    students.push({name, marks, photo:""});
-    localStorage.setItem("students", JSON.stringify(students));
-    loadStudents();
-    toast("Student Added");
-  }
+  if(file) reader.readAsDataURL(file);
 }
 
-/* ===== LOAD STUDENTS ===== */
 function loadStudents(){
   let list = document.getElementById("studentList");
   list.innerHTML="";
-
-  students.forEach((s,i)=>{
-    list.innerHTML += `
+  students.forEach(s=>{
+    list.innerHTML+=`
       <div class="glass card">
-        <img src="${s.photo}" width="60"><br>
-        ${s.name}<br>
-        ${s.marks}%
-        <div class="progress">
-          <div class="progress-bar" style="width:${s.marks}%"></div>
-        </div>
-        <button onclick="deleteStudent(${i})">Delete</button>
+        <img src="${s.photo}" width="50">
+        ${s.name} (${s.id})
       </div>
     `;
   });
 }
 
-/* ===== DELETE ===== */
-function deleteStudent(i){
-  students.splice(i,1);
-  localStorage.setItem("students", JSON.stringify(students));
-  loadStudents();
+/* ===== ATTENDANCE ===== */
+function loadAttendance(){
+  let div = document.getElementById("attendanceList");
+  div.innerHTML="";
+  students.forEach(s=>{
+    div.innerHTML+=`
+      <div>
+        ${s.name}
+        <select id="att_${s.id}">
+          <option>Present</option>
+          <option>Absent</option>
+        </select>
+      </div>
+    `;
+  });
 }
 
-/* ===== TEACHER ===== */
-function addTeacher(){
-  if(teachers.length>=12){
-    toast("Max 12 Teachers Allowed");
-    return;
-  }
+function saveAttendance(){
+  let today = new Date().toLocaleDateString();
+  let record = {date:today,data:{}};
 
-  let id = document.getElementById("tid").value;
-  let pass = document.getElementById("tpass").value;
+  students.forEach(s=>{
+    record.data[s.id] = document.getElementById("att_"+s.id).value;
+  });
 
-  teachers.push({id, pass});
-  localStorage.setItem("teachers", JSON.stringify(teachers));
-  toast("Teacher Added");
+  attendance.push(record);
+  toast("Attendance Saved");
+}
+
+/* ===== HOMEWORK ===== */
+function addHomework(){
+  let title = htitle.value;
+  let desc = hdesc.value;
+
+  homework.push({title,desc});
+  localStorage.setItem("homework",JSON.stringify(homework));
+  loadHomework();
+}
+
+function loadHomework(){
+  let list = document.getElementById("homeworkList");
+  list.innerHTML="";
+  homework.forEach(h=>{
+    list.innerHTML+=`
+      <div class="glass card">
+        <b>${h.title}</b><br>
+        ${h.desc}
+      </div>
+    `;
+  });
+}
+
+/* ===== LOGOUT ===== */
+function logout(){
+  location.reload();
 }
 
 </script>
