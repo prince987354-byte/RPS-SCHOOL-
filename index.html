@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Management Pro</title>
+
+<style>
+/* ===== GLOBAL ===== */
+body {
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  overflow-x:hidden;
+}
+
+/* Glass UI */
+.glass {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 15px;
+  padding:20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Container */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding:20px;
+}
+
+/* Inputs */
+input, button {
+  padding:10px;
+  margin:5px 0;
+  border:none;
+  border-radius:8px;
+}
+
+button {
+  background:#00c6ff;
+  color:white;
+  cursor:pointer;
+}
+
+/* Cards */
+.card {
+  margin-top:15px;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {opacity:0; transform:translateY(20px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+/* Toast */
+#toast {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#00c6ff;
+  padding:15px;
+  border-radius:10px;
+  display:none;
+}
+
+/* Progress Bar */
+.progress {
+  background:#333;
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress-bar {
+  height:10px;
+  background:#00ff99;
+}
+
+/* Hidden */
+.hidden {display:none;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginBox" class="glass">
+  <h2>Login</h2>
+  <input id="id" placeholder="Enter ID"><br>
+  <input id="pass" placeholder="Enter Password"><br>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+
+  <h2 id="roleTitle"></h2>
+
+  <div class="glass">
+    <h3>Add Student</h3>
+    <input id="name" placeholder="Student Name">
+    <input id="marks" placeholder="Marks %">
+    <input type="file" id="photo">
+    <button onclick="addStudent()">Add</button>
+  </div>
+
+  <div class="glass card">
+    <h3>Students</h3>
+    <div id="studentList"></div>
+  </div>
+
+  <!-- Teacher Management (Principal only) -->
+  <div id="teacherPanel" class="glass hidden">
+    <h3>Add Teacher (Max 12)</h3>
+    <input id="tid" placeholder="Teacher ID">
+    <input id="tpass" placeholder="Password">
+    <button onclick="addTeacher()">Add Teacher</button>
+  </div>
+
+</div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+
+/* ===== DATA ===== */
+let students = JSON.parse(localStorage.getItem("students")) || [];
+let teachers = JSON.parse(localStorage.getItem("teachers")) || [];
+
+const ADMIN = {id:"RPS", pass:"JAJ12"};
+const PRINCIPAL = {id:"Azizkhan", pass:"khanaziz"};
+
+/* ===== TOAST ===== */
+function toast(msg){
+  let t = document.getElementById("toast");
+  t.innerText = msg;
+  t.style.display = "block";
+  setTimeout(()=>t.style.display="none",2000);
+}
+
+/* ===== LOGIN ===== */
+function login(){
+  let id = document.getElementById("id").value;
+  let pass = document.getElementById("pass").value;
+
+  if(id===ADMIN.id && pass===ADMIN.pass){
+    start("Admin");
+  }
+  else if(id===PRINCIPAL.id && pass===PRINCIPAL.pass){
+    start("Principal");
+    document.getElementById("teacherPanel").classList.remove("hidden");
+  }
+  else{
+    let t = teachers.find(x=>x.id===id && x.pass===pass);
+    if(t){
+      start("Teacher");
+    } else {
+      toast("Invalid Login");
+    }
+  }
+}
+
+function start(role){
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("roleTitle").innerText = role + " Dashboard";
+  loadStudents();
+}
+
+/* ===== ADD STUDENT ===== */
+function addStudent(){
+  let name = document.getElementById("name").value;
+  let marks = document.getElementById("marks").value;
+  let file = document.getElementById("photo").files[0];
+
+  let reader = new FileReader();
+  reader.onload = function(){
+    students.push({
+      name, marks,
+      photo: reader.result
+    });
+    localStorage.setItem("students", JSON.stringify(students));
+    loadStudents();
+    toast("Student Added");
+  };
+
+  if(file){
+    reader.readAsDataURL(file);
+  } else {
+    students.push({name, marks, photo:""});
+    localStorage.setItem("students", JSON.stringify(students));
+    loadStudents();
+    toast("Student Added");
+  }
+}
+
+/* ===== LOAD STUDENTS ===== */
+function loadStudents(){
+  let list = document.getElementById("studentList");
+  list.innerHTML="";
+
+  students.forEach((s,i)=>{
+    list.innerHTML += `
+      <div class="glass card">
+        <img src="${s.photo}" width="60"><br>
+        ${s.name}<br>
+        ${s.marks}%
+        <div class="progress">
+          <div class="progress-bar" style="width:${s.marks}%"></div>
+        </div>
+        <button onclick="deleteStudent(${i})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+/* ===== DELETE ===== */
+function deleteStudent(i){
+  students.splice(i,1);
+  localStorage.setItem("students", JSON.stringify(students));
+  loadStudents();
+}
+
+/* ===== TEACHER ===== */
+function addTeacher(){
+  if(teachers.length>=12){
+    toast("Max 12 Teachers Allowed");
+    return;
+  }
+
+  let id = document.getElementById("tid").value;
+  let pass = document.getElementById("tpass").value;
+
+  teachers.push({id, pass});
+  localStorage.setItem("teachers", JSON.stringify(teachers));
+  toast("Teacher Added");
+}
+
+</script>
+
+</body>
+</html>
